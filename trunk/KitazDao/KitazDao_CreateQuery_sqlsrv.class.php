@@ -4,7 +4,7 @@ require_once dirname(__FILE__) .'/KitazDao_CreateQuery.class.php';
 
 /**
  * KitazDao
- * @name KitazDao_CreateQuery_oci
+ * @name KitazDao_CreateQuery_sqlsrv
  * @author keikitazawa
  */
 // ----------------------------------------------------------------------------
