@@ -296,8 +296,8 @@ class KitazDao_CreateQuery extends KitazDaoBase {
 			$sql .= " ". $this->whereParam;
 		}
 		// orderbyパラメータの処理
-		if (strlen($this->orderbyParam) > 0 && strlen($this->whereParam) > 0 && preg_match("/(order)\s{1,}(by)/i", $this->whereParam) == 0){
-			if (preg_match("/(order)\s{1,}(by)/i", $this->orderbyParam) > 0){
+		if (strlen($this->orderbyParam) > 0 || (strlen($this->whereParam) > 0 && preg_match("/(order)\s{1,}(by)/i", $this->whereParam)) == 0){
+			if (preg_match("/(order)\s{1,}(by)/i", $this->orderbyParam) === false){
 				$sql .= $this->orderbyParam;
 			}else {
 				$sql .= " ORDER BY ". $this->orderbyParam;
@@ -505,7 +505,7 @@ class KitazDao_CreateQuery extends KitazDaoBase {
 		// 変数の配列を取得する
 		for ($i = 0; $i < $num; $i++){
 			// プレースホルダーに「_IN_X」を付与
-			$this->conditionArray = ":". $prefix . $column . "_IN_". $i;
+			$conditionArray[] = ":". $prefix . $column . "_IN_". $i;
 			$this->sqlPHArray[] = ":". $prefix . $column . "_IN_". $i;
 			$this->bindValues[] = $valArray[$i];
 			$this->pdoDataType[] = $this->getPDODataType(get_class($this->entity), $column, $valArray, true);
