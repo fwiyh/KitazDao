@@ -28,5 +28,9 @@ class Table1Dao {
 		return $ret;
 	}
 	
+	public function selectSQLFile(Table1Dto $dto){
+		$ret = array();
+		return $ret;
+	}
 	
 }
