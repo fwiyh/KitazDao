@@ -107,7 +107,6 @@ class KitazDao_CreateQuery extends KitazDaoBase {
 	 */
 	protected $pdoDataType;
 	
-	
 	/**
 	 * コンストラクタ
 	 * @param Object $pdo DB接続済みPDOオブジェクト
@@ -150,6 +149,7 @@ class KitazDao_CreateQuery extends KitazDaoBase {
 		
 		$sql = "";
 		$stmt = null;
+		
 		// SQLファイルかSQLパラメータがある場合はSQLファイル解析でstmtを作成する
 		if (strlen($this->sqlParam) > 0){
 			$sql = $this->createSQLStatementFromFile($methodName, $arguments);
@@ -233,7 +233,8 @@ class KitazDao_CreateQuery extends KitazDaoBase {
 	
 		// SQL文の分析解釈を行う
 		$analyzeSQLFile = new KitazDao_AnalyzeSQLFile();
-		$analyzeSQLFile->analyze($params, $arguments, $this->sqlParam, $this->sqlPHArray, $this->bindValues, $this->pdoDataType);
+		$analyzeSQLFile->analyze($params, $arguments, $this->typeParam, $this->sqlParam, $this->sqlPHArray, $this->bindValues, $this->pdoDataType);
+		unset($analyzeSQLFile);
 		
 		return $this->sqlParam;
 	}
@@ -296,13 +297,14 @@ class KitazDao_CreateQuery extends KitazDaoBase {
 			$sql .= " ". $this->whereParam;
 		}
 		// orderbyパラメータの処理
-		if (strlen($this->orderbyParam) > 0 || (strlen($this->whereParam) > 0 && preg_match("/(order)\s{1,}(by)/i", $this->whereParam)) == 0){
+		if (strlen($this->orderbyParam) > 0 || (strlen($this->whereParam) > 0 && preg_match("/(order)\s{1,}(by)/i", $this->whereParam) === false)){
 			if (preg_match("/(order)\s{1,}(by)/i", $this->orderbyParam) === false){
 				$sql .= $this->orderbyParam;
 			}else {
 				$sql .= " ORDER BY ". $this->orderbyParam;
 			}
 		}
+		
 		return $sql;
 	}
 	
@@ -327,7 +329,7 @@ class KitazDao_CreateQuery extends KitazDaoBase {
 					$this->sqlPHArray[] = ":". $column;
 					$this->bindValues[] = $val;
 					// Entityの定数からPDOのデータ型を取得する
-					$this->pdoDataType[] = $this->getPDODataType(get_class($arguments[0]), $column, $val, true);
+					$this->pdoDataType[] = $this->getPDODataType(get_class($arguments[0]), $column, $val, $this->typeParam, true);
 				}
 			}
 		}
@@ -478,7 +480,7 @@ class KitazDao_CreateQuery extends KitazDaoBase {
 		$this->sqlSetArray[] =  $column ."=". ":". $column;
 		$this->sqlPHArray[] = ":". $column;
 		$this->bindValues[] = $value;
-		$this->pdoDataType[] = $this->getPDODataType(get_class($arguments), $column, $value, true);
+		$this->pdoDataType[] = $this->getPDODataType(get_class($arguments), $column, $value, $this->typeParam, true);
 	}
 	
 	/**
@@ -490,7 +492,7 @@ class KitazDao_CreateQuery extends KitazDaoBase {
 		$this->sqlConditionArray[] = $column ."=".":". $prefix . $column;
 		$this->sqlPHArray[] = ":". $prefix . $column;
 		$this->bindValues[] = $value;
-		$this->pdoDataType[] = $this->getPDODataType(get_class($this->entity), $column, $value, true);
+		$this->pdoDataType[] = $this->getPDODataType(get_class($this->entity), $column, $value, $this->typeParam, true);
 	}
 	/**
 	 * COLUMN IN (CONDITIONS) ステートメント作成
@@ -508,7 +510,7 @@ class KitazDao_CreateQuery extends KitazDaoBase {
 			$conditionArray[] = ":". $prefix . $column . "_IN_". $i;
 			$this->sqlPHArray[] = ":". $prefix . $column . "_IN_". $i;
 			$this->bindValues[] = $valArray[$i];
-			$this->pdoDataType[] = $this->getPDODataType(get_class($this->entity), $column, $valArray, true);
+			$this->pdoDataType[] = $this->getPDODataType(get_class($this->entity), $column, $valArray[$i], $this->typeParam, true);
 		}
 		if ($num > 0){
 			$this->sqlConditionArray[] = $column ." IN (". implode(",", $conditionArray) .")";
@@ -528,7 +530,7 @@ class KitazDao_CreateQuery extends KitazDaoBase {
 		
 		$this->sqlPHArray[] = ":$paramName";
 		$this->bindValues[] = $value;
-		$this->pdoDataType[] = $this->getPDODataType(get_class($this->entity), "", $value, false);
+		$this->pdoDataType[] = $this->getPDODataType(get_class($this->entity), "", $value, $this->typeParam, false);
 	}
 	/**
 	 * PDOのデータタイプを返す
@@ -538,10 +540,10 @@ class KitazDao_CreateQuery extends KitazDaoBase {
 	 * @param boolean $isEntity true:Entity由来、false:データから判別
 	 * @return Integer KD_TYPE_* PDOのデータ型
 	 */
-	public function getPDODataType($className, $column, $value, $isEntity){
+	public function getPDODataType($className, $column, $value, $sqltypeParam, $isEntity){
 		$dataType = "";
 		// データ型パラメータが与えられている場合はこれを優先する
-		foreach ($this->typeParam as $key => $v){
+		foreach ($sqltypeParam as $key => $v){
 			// パラメータが存在すればこれを優先する
 			if (strtoupper($key) == $column){
 				$dataType = $v;
@@ -560,7 +562,6 @@ class KitazDao_CreateQuery extends KitazDaoBase {
 		}
 		return $dataType;
 	}
-	
 	/**
 	 * プリペア
 	 * @param String $sql プレースホルダー付SQL文字列

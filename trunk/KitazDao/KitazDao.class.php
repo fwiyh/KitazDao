@@ -197,6 +197,7 @@ class KitazDao extends KitazDaoBase {
 		
 		// クエリ作成オブジェクトの作成
 		$stmt = false;
+		
 		$createQuery = new $extClassName($this->pdo, $this->loadDao, $this->loadEntity);
 		
 		// メソッド名からSQL種別を取得してSQL文字列を作成する
