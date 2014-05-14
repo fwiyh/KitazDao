@@ -7,7 +7,7 @@ Oracle11gでS2Dao.php5を用いてLOB型を取りにいけなかったため自�
 [動作環境]
 PHP5.3+
 各種PDO
-Oracle11g, mysql5.x
+Oracle11g, mysql5.x, Postgresql 8.4.21, SQL Server 2008 R2
 
 [インストール]
 KitazDaoフォルダをプログラムが読み取り可能な場所に格納してください。

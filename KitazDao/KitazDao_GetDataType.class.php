@@ -82,4 +82,64 @@ class KitazDao_GetDataType extends KitazDaoBase {
 		// 何も該当しないものはLOB
 		return parent::KD_PARAM_LOB;
 	}
+	
+	/**
+	 * PDOのデータタイプを返す
+	 * @param String $className Entityのクラス名
+	 * @param String $column カラム名
+	 * @param Variant $value データの値
+	 * @param array $typeParam Select文のtypeパラメータ配列（なければarray()を入れる）
+	 * @param boolean $isEntity true:Entity由来、false:データから判別
+	 * @return Integer KD_TYPE_* PDOのデータ型
+	 */
+	public function getPDODataType($className, $column, $value, $typeParam, $isEntity){
+		$dataType = null;
+		// データ型パラメータが与えられている場合はこれを優先する
+		$dataType = $this->getPDODataTypeFromTypeParam($typeParam, $column);
+		
+		// パラメータが与えられていない場合はEntityかデータで判別する
+		if ($dataType == null){
+			if ($isEntity){
+				$dataType = $this->getPDODataTypeFromEntity($className, $column);
+			}else {
+				// データ型の自動取得を行う
+				$dataType = $this->getDataType($value);
+			}
+		}
+		return $dataType;
+	}
+	
+	/**
+	 * カラムからPDOデータ型を取得する
+	 * @param unknown $typeParam
+	 * @param unknown $column
+	 * @return Integer データ型　ない場合はnull
+	 */
+	public function getPDODataTypeFromTypeParam($typeParam, $column){
+		
+		$dataType = null;
+		// データ型パラメータが与えられている場合はこれを優先する
+		foreach ($typeParam as $key => $v){
+			// パラメータが存在すればこれを優先する
+			if (strtoupper($key) == $column){
+				$dataType = $v;
+			}
+		}
+		return $dataType;	
+	}
+	
+	/**
+	 * Entityからデータ型を取得する
+	 * @return Integer PDOデータ型　取得できない場合はSTRING扱い
+	 */
+	public function getPDODataTypeFromEntity($className, $column){
+		try{
+			$dataType = constant($className ."::". strtoupper($column) ."_TYPE");
+		}catch (Exception $e){
+			$dataType = KitazDao::KD_PARAM_STR;
+		}
+		return $dataType;
+	}
+	
+	
 }

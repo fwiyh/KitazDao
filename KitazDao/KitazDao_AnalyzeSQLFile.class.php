@@ -31,20 +31,32 @@ require_once dirname(__FILE__) .'/KitazDao_GetDataType.class.php';
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-class KitazDao_AnalyzeSQLFile extends KitazDaoBase {
+class KitazDao_AnalyzeSQLFile extends KitazDao_CreateQuery {
 	
 	private $paramArray = array();
+
+	private $aqlTypeParam;
+	
+	public function __construct(){
+		
+	}
 	
 	/**
 	 * SQLパラメータ・SQLファイルの解釈を行う
 	 * @param array $params メソッドのパラメータ名配列
 	 * @param array $arguments 渡された引数の配列
+	 * @param array $typeParam データ型パラメータ
 	 * @param string $sql 対象のSQL文
+	 * @param array $sqlPHArray プレースホルダー
+	 * @param array $bindValues プレースホルダーに格納する変数
+	 * @param array $pdoDataType PDOのデータ型
 	 */
-	public function analyze($params, $arguments, &$sql, &$sqlPHArray, &$bindValues, &$pdoDataType){
+	public function analyze($params, $arguments, $typeParam, &$sql, &$sqlPHArray, &$bindValues, &$pdoDataType){
 		$sqlPHArray = array();
 		$bindValues = array();
 		$pdoDataType = array();
+		$this->aqlTypeParam = $typeParam;
+		
 		// 評価外コメントを除去する
 		$sql = $this->removeNoEvaluationComment($sql);
 		// 渡された変数すべてをプレースホルダーに置き換える
@@ -80,7 +92,7 @@ class KitazDao_AnalyzeSQLFile extends KitazDaoBase {
 			$v = $arguments[$i];
 			// クラス名がある（entity）の場合はセットされた項目すべてをバインドする
 			if (@get_class($v) && $v != null){
-				$this->setPlaceHolderForEntity($v, $p, $sql, $sqlPHArray, $bindValues, $pdoDataType);
+				$this->setPlaceHolderForEntity($p->getName(), $v, $sql, $sqlPHArray, $bindValues, $pdoDataType);
 			// 引数が配列の場合はINステートメントで置換
 			}else if (is_array($v)){
 				$this->setPlaceHolderForArray($p->getName(), $v, $sql, $sqlPHArray, $bindValues, $pdoDataType);
@@ -106,24 +118,29 @@ class KitazDao_AnalyzeSQLFile extends KitazDaoBase {
 	 * @param array $bindValues 設定値配列
 	 * @param array $pdoDataType PDOデータ型配列
 	 */
-	private function setPlaceHolderForEntity($entity, $methodName, &$sql, &$sqlPHArray, &$bindValues, &$pdoDataType){
+	private function setPlaceHolderForEntity($methodName, $entity, &$sql, &$sqlPHArray, &$bindValues, &$pdoDataType){
 		$ret = array();
 		// メソッドパラメータから条件式を作成する
 		foreach (get_class_methods($entity) as $m){
 			if (substr($m, 0, 3) == "get"){
-				$column = strtoupper(substr($m, 3));
+				$column = lcfirst(substr($m, 3));
 				// getterから値を取得する
-				$value = call_user_func_array(array(get_class($entity), $m), array());
-				// 値が設定されている場合はバインドする
-				if (isset($v)){
-					$param = strtoupper($methodName) .".". $column;
-					// 配列の場合はINステートメントに置換
-					if (is_array($value)){
-						$this->setPlaceHolderForArray($param, $value, $sql, $sqlPHArray, $bindValues, $pdoDataType);
-					// 変数の場合は単純置換
-					}else {
-						$this->setPlaceHolderForVariant($param, $value, $sql, $sqlPHArray, $bindValues, $pdoDataType);
-					}
+				$value = $entity->$m();
+				// SQLファイル内パラメータの取得
+				$param = lcfirst($methodName) .".". $column;
+				// 配列の場合はINステートメントに置換
+				$dataType = array();
+				if (is_array($value)){
+					$this->setPlaceHolderForArray($param, $value, $sql, $sqlPHArray, $bindValues, $dataType, get_class($entity), strtoupper($column));
+				// 変数の場合は単純置換
+				}else {
+					$this->setPlaceHolderForVariant($param, $value, $sql, $sqlPHArray, $bindValues, $dataType, get_class($entity), strtoupper($column));
+				}
+				// データ型を格納
+				if (count($dataType) > 0){
+					$pdoDataType[] = $dataType[0];
+					// paramArrayに追加
+					$this->setParamsArray($param, $value, $dataType[0]);
 				}
 			}
 		}
@@ -137,28 +154,32 @@ class KitazDao_AnalyzeSQLFile extends KitazDaoBase {
 	 * @param array $bindValues 設定値配列
 	 * @param array $pdoDataType PDOデータ型配列
 	 */
-	private function setPlaceHolderForVariant($paramName, $value, &$sql, &$sqlPHArray, &$bindValues, &$pdoDataType){
+	private function setPlaceHolderForVariant($paramName, $value, &$sql, &$sqlPHArray, &$bindValues, &$pdoDataType, $entity = null, $propName = null){
 		// エンティティの場合はコロンを「_E_」に置き換えてプレースホルダーを作成する
 		$pattern1 = "/(\/\*)". $paramName ."(\*\/)([\"]\S{0,}[\"]|[\']\S{0,}[\']|([0-9a-zA-Z\.\_\-]){1,})/i";
 		// プレースホルダーになる部分を配列に分解して結合し直す
 		$sqlArr = preg_split($pattern1, $sql);
 		$str = "";
-		$dataType = "";
+		$dataType = null;
+		$targetPropName = "";
 		$max = count($sqlArr);
-		$getDataType = new KitazDao_GetDataType();
 		if ($max > 0){
 			$str = $sqlArr[0];
 			for ($i=1; $i<$max; $i++){
 				$str .= ":". str_replace(".", "_E_", $paramName) ."_$i ". $sqlArr[$i];
 				$sqlPHArray[] = ":". str_replace(".", "_E_", $paramName) ."_$i";
 				$bindValues[] = $value;
-				$dataType = $getDataType->getDataType($value);
+				if ($propName == null){
+					$targetPropName = $paramName;
+				}else {
+					$targetPropName = $propName;
+				}
+				$dataType = parent::getPDODataType($entity, $targetPropName, $value, $this->aqlTypeParam, isset($entity));
 				$pdoDataType[] = $dataType;
 			}
+			// paramArrayに追加
+			$this->setParamsArray($paramName, $value, $dataType);
 		}
-		// paramArrayに追加
-		$this->setParamsArray($paramName, $value, $dataType);
-		unset($getDataType);
 		// 置換結果を返す
 		$sql = $str;
 	}
@@ -174,15 +195,15 @@ class KitazDao_AnalyzeSQLFile extends KitazDaoBase {
 	 * @param array $bindValues 設定値配列
 	 * @param array $pdoDataType PDOデータ型配列
 	 */
-	private function setPlaceHolderForArray($paramName, $values, &$sql, &$sqlPHArray, &$bindValues, &$pdoDataType){
+	private function setPlaceHolderForArray($paramName, $values, &$sql, &$sqlPHArray, &$bindValues, &$pdoDataType, $entity = null, $propName = null){
 		// エンティティの場合はコロンを「_E_」に置き換えてプレースホルダーを作成する
 		$pattern1 = "/(\/\*)". $paramName ."(\*\/)(\(){1}([0-9a-zA-Z,\.\-\"\'\_]{1,})(\)){1}/i";
 		// プレースホルダーになる部分を配列に分解して結合し直す
 		$sqlArr = preg_split($pattern1, $sql);
 		$str = "";
-		$dataType = "";
+		$dataType = null;
+		$targetPropName = "";
 		$max = count($sqlArr) - 1;
-		$getDataType = new KitazDao_GetDataType();
 		if ($max > 0){
 			$str = $sqlArr[0];
 			$inStr = array();
@@ -192,18 +213,22 @@ class KitazDao_AnalyzeSQLFile extends KitazDaoBase {
 					$inStr[] = ":". str_replace(".", "_E_", $paramName) ."_IN_$varCount";
 					$sqlPHArray[] = ":". str_replace(".", "_E_", $paramName) ."_IN_$varCount";
 					$bindValues[] = $values[$j];
-					$dataType = $getDataType->getDataType($values[$j]);
+					if ($propName == null){
+						$targetPropName = $paramName;
+					}else {
+						$targetPropName = $propName;
+					}
+					$dataType = parent::getPDODataType($entity, $targetPropName, $value, $this->aqlTypeParam, isset($entity));
 					$pdoDataType[] = $dataType;
 					$varCount++;
 				}
 				$str .= "(". implode(",", $inStr) .") ". $sqlArr[$i+1];
 			}
+			// paramArrayに追加（SQLファイルのIFコメントで配列は無効）
+			$this->setParamsArray($paramName, null, parent::KD_PARAM_NULL);
 		}
-		unset($getDataType);
 		// 置換結果を返す
 		$sql = $str;
-		// paramArrayに追加（SQLファイルのIFコメントで配列は無効）
-		$this->setParamsArray($paramName, null, parent::KD_PARAM_NULL);
 		
 	}
 	
@@ -294,9 +319,10 @@ class KitazDao_AnalyzeSQLFile extends KitazDaoBase {
 	private function evaluateFormula($evalStr){
 		$ret = false;
 		// 全パターンの演算子以外を取り出す
-		$pattern = "/[^\"\'\s]{0,}[^(IF\s|=|\!|\+|\-|\*|\/|NULL\s|\||\&|AND\s|OR\s|XOR\s|\~|\^)]{1,}[^\"\'\s]{0,}/i";
+		$pattern = "/[^\"\'\s]{1,}[^(IF\s|=|\!|\+|\-|\*|\/|NULL\s|\||\&|AND\s|OR\s|XOR\s|\~|\^)]{1,}[^\"\'\s]{1,}/i";
 		if (preg_match_all($pattern, $evalStr, $matches)){
 			foreach ($matches[0] as $v){
+				$v = str_replace("\"", "", $v);
 				// パラメータと一致したら置き換える
 				foreach($this->paramArray as $a){
 					if (strtoupper($a["p"]) == strtoupper($v)){
