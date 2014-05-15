@@ -1,8 +1,8 @@
 <?php
 require_once dirname(__FILE__) .'/KitazDao_GetDataType.class.php';
 require_once dirname(__FILE__) .'/KitazDao_GetObject.class.php';
-require_once dirname(__FILE__) .'/KitazDao_OutputSelectQuery.class.php';
-require_once dirname(__FILE__) .'/KitazDaoBase.class.php';
+require_once __DIR__ .'/KitazDao_OutputSelectQuery.class.php';
+require_once __DIR__ .'/KitazDaoBase.class.php';
 
 /**
  * KitazDao
@@ -63,7 +63,7 @@ class KitazDao extends KitazDaoBase {
 	 */
 	public function __construct($className){
 		// 設定ファイルを読み込む
-		$iniArr = parse_ini_file(KD_CONFIG_FILE_PATH, true);
+		$iniArr = parse_ini_file(substr(__DIR__, 0, strrpos(__DIR__, DIRECTORY_SEPARATOR)) ."/KitazDao.config", true);
 		// 設定ファイルからDSN文字列作成
 		$dsn = $iniArr["DBSetting"]["dsn"];
 		$username = $iniArr["DBSetting"]["user"];

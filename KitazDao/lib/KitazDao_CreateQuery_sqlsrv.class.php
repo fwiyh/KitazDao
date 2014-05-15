@@ -1,6 +1,6 @@
 <?php
 
-require_once dirname(__FILE__) .'/KitazDao_CreateQuery.class.php';
+require_once __DIR__ .'/KitazDao_CreateQuery.class.php';
 
 /**
  * KitazDao
