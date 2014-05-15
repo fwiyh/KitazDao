@@ -8,7 +8,6 @@ require_once dirname(__FILE__) .'/KitazDaoBase.class.php';
  * KitazDao
  * @name KitazDao
  * @author keikitazawa
- * @TODO PostgreSQL LOB型対応
  */
 // ----------------------------------------------------------------------------
 // The MIT License (MIT)
