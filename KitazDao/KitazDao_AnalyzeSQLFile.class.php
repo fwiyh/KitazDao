@@ -111,8 +111,8 @@ class KitazDao_AnalyzeSQLFile extends KitazDao_CreateQuery {
 	// データ型：「$entity::strtoupper([$methodName])_TYPE」
 	/**
 	 * entityをすべてプレースホルダーに置き換える
-	 * @param Object $entity エンティティ
 	 * @param String $methodName メソッド名
+	 * @param Object $entity エンティティ
 	 * @param String $sql 対象のSQL文
 	 * @param array $sqlPHArray プレースホルダー配列
 	 * @param array $bindValues 設定値配列
@@ -166,8 +166,9 @@ class KitazDao_AnalyzeSQLFile extends KitazDao_CreateQuery {
 		if ($max > 0){
 			$str = $sqlArr[0];
 			for ($i=1; $i<$max; $i++){
-				$str .= ":". str_replace(".", "_E_", $paramName) ."_$i ". $sqlArr[$i];
-				$sqlPHArray[] = ":". str_replace(".", "_E_", $paramName) ."_$i";
+				$pNum = $i-1;
+				$str .= ":". str_replace(".", "_E_", $paramName) ."_$pNum ". $sqlArr[$i];
+				$sqlPHArray[] = ":". str_replace(".", "_E_", $paramName) ."_$pNum";
 				$bindValues[] = $value;
 				if ($propName == null){
 					$targetPropName = $paramName;
@@ -210,9 +211,10 @@ class KitazDao_AnalyzeSQLFile extends KitazDao_CreateQuery {
 			$varCount = 0;
 			for ($i=0; $i<$max; $i++){
 				for ($j=0,$vmax=count($values);$j<$vmax;$j++){
+					$value = $values[$j];
 					$inStr[] = ":". str_replace(".", "_E_", $paramName) ."_IN_$varCount";
 					$sqlPHArray[] = ":". str_replace(".", "_E_", $paramName) ."_IN_$varCount";
-					$bindValues[] = $values[$j];
+					$bindValues[] = $value;
 					if ($propName == null){
 						$targetPropName = $paramName;
 					}else {
@@ -226,10 +228,12 @@ class KitazDao_AnalyzeSQLFile extends KitazDao_CreateQuery {
 			}
 			// paramArrayに追加（SQLファイルのIFコメントで配列は無効）
 			$this->setParamsArray($paramName, null, parent::KD_PARAM_NULL);
+		}else {
+			// max0:$sqlArrが１要素の場合＝分割要素がないのでそのまま渡す
+			$str = $sqlArr[0];
 		}
 		// 置換結果を返す
 		$sql = $str;
-		
 	}
 	
 	/**
@@ -251,7 +255,7 @@ class KitazDao_AnalyzeSQLFile extends KitazDao_CreateQuery {
 	 * @param array $bindValues 設定値配列
 	 * @param array $pdoDataType PDOデータ型配列
 	 */
-	private function evaluationSQLFile($params, $arguments, &$sql, &$sqlPHArray, &$bindValues, &$pdoDataType){
+	private function evaluationSQLFile($params, $arguments, $sql, &$sqlPHArray, &$bindValues, &$pdoDataType){
 		// 戻り値のSQL文字列
 		$ret = "";
 		// 評価式変数
@@ -266,7 +270,6 @@ class KitazDao_AnalyzeSQLFile extends KitazDao_CreateQuery {
 		$max = strlen($sql);
 		// ７文字先まで検索対象にするために７文字追加する
 		$sql = $sql .str_repeat(" ", 7);
-		
 		// BEGIN句処理のフラグ
 		$isExistElse = false;
 		$isTrueComment = false;
@@ -322,7 +325,6 @@ class KitazDao_AnalyzeSQLFile extends KitazDao_CreateQuery {
 		$pattern = "/[^\"\'\s]{1,}[^(IF\s|=|\!|\+|\-|\*|\/|NULL\s|\||\&|AND\s|OR\s|XOR\s|\~|\^)]{1,}[^\"\'\s]{1,}/i";
 		if (preg_match_all($pattern, $evalStr, $matches)){
 			foreach ($matches[0] as $v){
-				$v = str_replace("\"", "", $v);
 				// パラメータと一致したら置き換える
 				foreach($this->paramArray as $a){
 					if (strtoupper($a["p"]) == strtoupper($v)){
