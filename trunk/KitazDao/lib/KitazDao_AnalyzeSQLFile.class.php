@@ -1,7 +1,6 @@
 <?php
 
-require_once dirname(__FILE__) .'/KitazDaoBase.class.php';
-require_once dirname(__FILE__) .'/KitazDao_GetDataType.class.php';
+require_once __DIR__ .'/KitazDaoBase.class.php';
 
 /**
  * KitazDao
