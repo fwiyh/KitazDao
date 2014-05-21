@@ -295,7 +295,8 @@ class KitazDao_CreateQuery extends KitazDaoBase {
 			$sql .= " ". $this->whereParam;
 		}
 		// orderbyパラメータの処理
-		if (strlen($this->orderbyParam) > 0 || (strlen($this->whereParam) > 0 && preg_match("/(order)\s{1,}(by)/i", $this->whereParam) === false)){
+		if (strlen($this->orderbyParam) > 0 || 
+			(strlen($this->orderbyParam) > 0 && strlen($this->whereParam) > 0 && preg_match("/(order)\s{1,}(by)/i", $this->whereParam) === false)){
 			$buf = " ";
 			if (preg_match("/(order)\s{1,}(by)/i", $this->orderbyParam) === false){
 				$buf = " ORDER BY ";
