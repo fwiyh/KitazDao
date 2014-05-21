@@ -214,9 +214,7 @@ class KitazDao_CreateQuery extends KitazDaoBase {
 		$filepath = realpath(KD_DAO_PATH) ."/". get_class($this->dao) ."_". $methodName .".sql";
 		if (file_exists($filepath)){
 			// SQLファイルからSQL文を取得
-			$h = fopen($filepath, "r");
-			$this->sqlParam = fread($h, filesize($filepath));
-			fclose($h);
+			$this->sqlParam = file_get_contents($filepath);
 		}
 	}
 	
