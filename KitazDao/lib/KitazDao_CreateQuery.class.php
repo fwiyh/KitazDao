@@ -211,7 +211,7 @@ class KitazDao_CreateQuery extends KitazDaoBase {
 	 * @param String $methodName 呼び出されたメソッドのメソッド名
 	 */
 	public function getSQLFromFile($methodName){
-		$filepath = realpath(KD_DAO_PATH) ."/". get_class($this->dao) ."_". $methodName .".sql";
+		$filepath = realpath(KD_DAO_PATH) . DIRECTORY_SEPARATOR . get_class($this->dao) ."_". $methodName .".sql";
 		if (file_exists($filepath)){
 			// SQLファイルからSQL文を取得
 			$this->sqlParam = file_get_contents($filepath);
@@ -296,11 +296,11 @@ class KitazDao_CreateQuery extends KitazDaoBase {
 		}
 		// orderbyパラメータの処理
 		if (strlen($this->orderbyParam) > 0 || (strlen($this->whereParam) > 0 && preg_match("/(order)\s{1,}(by)/i", $this->whereParam) === false)){
+			$buf = " ";
 			if (preg_match("/(order)\s{1,}(by)/i", $this->orderbyParam) === false){
-				$sql .= $this->orderbyParam;
-			}else {
-				$sql .= " ORDER BY ". $this->orderbyParam;
+				$buf = " ORDER BY ";
 			}
+			$sql .= $buf . $this->orderbyParam;
 		}
 		
 		return $sql;

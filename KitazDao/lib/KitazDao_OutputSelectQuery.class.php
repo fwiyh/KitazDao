@@ -54,10 +54,8 @@ class KitazDao_OutputSelectQuery extends KitazDaoBase {
 			// 定数の最後が「_TYPE」のものを取得する
 			if ((strpos($key,"_TYPE") >= strlen($key) -5) && substr($key, 0, -5) != ""){
 				// 定数の値からPDOのデータ型を取得する
-				$columnU = strtoupper(substr($key, 0, -5));
-				$columnL = strtolower(substr($key, 0, -5));
-				$pdoTypeArray[$columnU] = $val;
-				$pdoTypeArray[$columnL] = $val;
+				$column = strtolower(substr($key, 0, -5));
+				$pdoTypeArray[$column] = $val;
 			}
 		}
 		
@@ -66,21 +64,24 @@ class KitazDao_OutputSelectQuery extends KitazDaoBase {
 			// 各行でPDOのINTになっているものだけfloat変換して置き換える
 			foreach($row as $key => $v){
 				// 整数型扱いのものはピリオドの有無で整数・浮動小数に変更
-				switch ($pdoTypeArray[$key]){
+				switch ($pdoTypeArray[strtolower($key)]){
 					case parent::KD_PARAM_INT:
-						if (!strpos($v, ".")){
-							$row[$key] = intval($v);
-						}else {
-							$row[$key] = floatval($v);
-						}
+						$row[strtolower($key)] = floatval($v);
+						$row[strtoupper($key)] = floatval($v);
 						break;
 					// ブール型はキャストで変更
 					case KitazDao::KD_PARAM_BOOL :
-						$row[$key] = (bool)$v;
+						$row[strtolower($key)] = (bool)$v;
+						$row[strtoupper($key)] = (bool)$v;
 						break;
 					// null型はnullを入れておく
 					case KitazDao::KD_PARAM_NULL :
-						$row[$key] = null;
+						$row[strtolower($key)] = null;
+						$row[strtoupper($key)] = null;
+						break;
+					default:
+						$row[strtolower($key)] = $v;
+						$row[strtoupper($key)] = $v;
 						break;
 				}
 			}

@@ -63,7 +63,7 @@ class KitazDao extends KitazDaoBase {
 	 */
 	public function __construct($className){
 		// 設定ファイルを読み込む
-		$iniArr = parse_ini_file(substr(__DIR__, 0, strrpos(__DIR__, DIRECTORY_SEPARATOR)) ."/KitazDao.config", true);
+		$iniArr = parse_ini_file(substr(__DIR__, 0, strrpos(__DIR__, DIRECTORY_SEPARATOR)) . DIRECTORY_SEPARATOR ."KitazDao.config", true);
 		// 設定ファイルからDSN文字列作成
 		$dsn = $iniArr["DBSetting"]["dsn"];
 		$username = $iniArr["DBSetting"]["user"];
@@ -186,11 +186,11 @@ class KitazDao extends KitazDaoBase {
 	private function executeMethod($methodName, $arguments){
 		// DB拡張があればそれを取り込む
 		$extClassName = "KitazDao_CreateQuery_" . strtolower($this->dbType);
-		$extFilePath = dirname(__FILE__) ."/". $extClassName .".class.php";
+		$extFilePath = __DIR__ . DIRECTORY_SEPARATOR . $extClassName .".class.php";
 		if (file_exists($extFilePath)){
 			require_once $extFilePath;
 		}else {
-			require_once dirname(__FILE__) ."/KitazDao_CreateQuery.class.php";
+			require_once __DIR__ . DIRECTORY_SEPARATOR ."KitazDao_CreateQuery.class.php";
 			$extClassName = "KitazDao_CreateQuery";
 		}
 		
