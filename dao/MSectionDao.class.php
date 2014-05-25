@@ -34,8 +34,8 @@ class MSectionDao {
 	
 	public function selectWhereTest($t){
 		$ret = array();
-		$ret["where"] = " tel = ?";
-		$ret["orderby"] = " dir desc";
+		$ret["where"] = " tel = ? order by dir desc";
+		$ret["orderby"] = "";
 		return $ret;
 	}
 	
