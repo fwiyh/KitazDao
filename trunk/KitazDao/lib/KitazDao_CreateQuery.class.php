@@ -286,13 +286,14 @@ class KitazDao_CreateQuery extends KitazDaoBase {
 		
 		// SQL文字列作成
 		$sql = "SELECT ". $this->columnsParam ." FROM $tableName";
-		if (count($this->sqlConditionArray) > 0){
-			$sql .= " WHERE ". implode(" AND ", $this->sqlConditionArray);
-			// whereパラメータあり＆where文字列がない場合はWHEREを付与する
-		}else if(strlen($this->whereParam) > 0 && preg_match("/^\s{0,}(where)\s{1,}/i", $this->whereParam) == 0){
+		// whereメソッドパラメータを優先する
+		if (strlen($this->whereParam) > 0 && preg_match("/^\s{0,}(where)\s{1,}/i", $this->whereParam) == 0){
 			$sql .= " WHERE ". $this->whereParam;
-		}else if(strlen($this->whereParam) > 0){
+		}else if (strlen($this->whereParam) > 0){
 			$sql .= " ". $this->whereParam;
+		// whereメソッドパラメータがない場合のみENTITYからの条件式作成を行う
+		}else if (count($this->sqlConditionArray) > 0){
+			$sql .= " WHERE ". implode(" AND ", $this->sqlConditionArray);
 		}
 		// orderbyパラメータの処理
 		if (strlen($this->whereParam) == 0 && strlen($this->orderbyParam) > 0){
@@ -421,8 +422,14 @@ class KitazDao_CreateQuery extends KitazDaoBase {
 	public function buildUpdateSQLString($tableName){
 		// SQL文字列作成
 		$sql = "UPDATE $tableName SET ". implode(",", $this->sqlSetArray);
-		if (count($this->sqlConditionArray) > 0){
-			$sql .= " WHERE ". implode(",", $this->sqlConditionArray);
+		// whereメソッドパラメータを優先する
+		if (strlen($this->whereParam) > 0 && preg_match("/^\s{0,}(where)\s{1,}/i", $this->whereParam) == 0){
+			$sql .= " WHERE ". $this->whereParam;
+		}else if (strlen($this->whereParam) > 0){
+			$sql .= " ". $this->whereParam;
+			// whereメソッドパラメータがない場合のみENTITYからの条件式作成を行う
+		}else if (count($this->sqlConditionArray) > 0){
+			$sql .= " WHERE ". implode(" AND ", $this->sqlConditionArray);
 		}
 		return $sql;
 	}
@@ -462,7 +469,13 @@ class KitazDao_CreateQuery extends KitazDaoBase {
 	public function buildDeleteSQLString($tableName){
 		// SQL文字列作成
 		$sql = "DELETE FROM $tableName";
-		if (count($this->sqlConditionArray > 0)){
+			// whereメソッドパラメータを優先する
+		if (strlen($this->whereParam) > 0 && preg_match("/^\s{0,}(where)\s{1,}/i", $this->whereParam) == 0){
+			$sql .= " WHERE ". $this->whereParam;
+		}else if (strlen($this->whereParam) > 0){
+			$sql .= " ". $this->whereParam;
+			// whereメソッドパラメータがない場合のみENTITYからの条件式作成を行う
+		}else if (count($this->sqlConditionArray) > 0){
 			$sql .= " WHERE ". implode(" AND ", $this->sqlConditionArray);
 		}
 		return $sql;
