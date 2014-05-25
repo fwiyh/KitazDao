@@ -289,16 +289,15 @@ class KitazDao_CreateQuery extends KitazDaoBase {
 		if (count($this->sqlConditionArray) > 0){
 			$sql .= " WHERE ". implode(" AND ", $this->sqlConditionArray);
 			// whereパラメータあり＆where文字列がない場合はWHEREを付与する
-		}else if(strlen($this->whereParam) > 0 && stripos($this->whereParam, "where") === false){
+		}else if(strlen($this->whereParam) > 0 && preg_match("/^\s{0,}(where)\s{1,}/i", $this->whereParam) == 0){
 			$sql .= " WHERE ". $this->whereParam;
 		}else if(strlen($this->whereParam) > 0){
 			$sql .= " ". $this->whereParam;
 		}
 		// orderbyパラメータの処理
-		if (strlen($this->orderbyParam) > 0 || 
-			(strlen($this->orderbyParam) > 0 && strlen($this->whereParam) > 0 && preg_match("/(order)\s{1,}(by)/i", $this->whereParam) === false)){
+		if (strlen($this->whereParam) == 0 && strlen($this->orderbyParam) > 0){
 			$buf = " ";
-			if (preg_match("/(order)\s{1,}(by)/i", $this->orderbyParam) === false){
+			if (preg_match("/^\s{0,}(order)\s{1,}(by)\s{1,}/i", $this->orderbyParam) == 0){
 				$buf = " ORDER BY ";
 			}
 			$sql .= $buf . $this->orderbyParam;

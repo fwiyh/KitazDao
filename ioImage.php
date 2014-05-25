@@ -30,7 +30,7 @@ if (isset($file)){
 	$maxArr = $kd->getMaxTid();
 	$maxTid = 0;
 	if ($maxArr[0]["mtid"] !== null){
-		$maxTid = (int)$maxArr[0]["mtid"] +1;
+		$maxTid = $maxArr[0]["mtid"] +1;
 	}
 	$dto->setTid($maxTid);
 	$dto->setTname($fileName);
@@ -52,7 +52,15 @@ if (isset($file)){
 
 	$maxArr = $kd->getMaxTid();
 	$retArr = $kd->seletTable($maxTid);
-	var_dump($retArr);
+	foreach($retArr as $val){
+		echo $val["updatedt"] . "<br>";
+		echo $val["attribute"] . "<br>";
+		echo $val["tid"] . "<br>";
+		echo $val["tname"] . "<br>";
+		echo  mb_convert_encoding(stream_get_contents($val["tcomment"]), "utf8", "auto") . "<br>";
+		echo $val["timage"] . "<br>";
+		echo "<br>";
+	}
 	
 // 	$kd->begintrans();
 // 	$dto->setTid(3);

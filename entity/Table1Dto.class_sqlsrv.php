@@ -16,8 +16,8 @@ class Table1Dto {
 	const ATTRIBUTE_TYPE = KitazDao::KD_PARAM_INT;
 	const TID_TYPE = KitazDao::KD_PARAM_INT;
 	const TNAME_TYPE = KitazDao::KD_PARAM_STR;
-	const TCOMMENT_TYPE = KitazDao::KD_PARAM_OCI_CLOB;
-	const TIMAGE_TYPE = KitazDao::KD_PARAM_OCI_BLOB;
+	const TCOMMENT_TYPE = KitazDao::KD_PARAM_SQLSRV_TEXT;
+	const TIMAGE_TYPE = KitazDao::KD_PARAM_SQLSRV_BINARY;
 	
 	const MTID_TYPE = KitazDao::KD_PARAM_INT;
 	
@@ -63,10 +63,10 @@ class Table1Dto {
 	* $comment(Tcomment)のgetter/setter
 	**/
 	public function getTcomment() {
-		return $this->comment;
+		return $this->tcomment;
 	}
-	public function setTcomment($comment) {
-		$this->comment = $comment;
+	public function setTcomment($tcomment) {
+		$this->tcomment = $tcomment;
 	}
 	/**
 	* $timage(Timage)のgetter/setter
