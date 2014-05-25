@@ -21,11 +21,20 @@ $pdo = new KitazDao("MSectionDao");
 
 // var_dump($arr);
 // exit();
+$arr = $pdo->selectWhereTest(" ");
+var_dump($arr);
+
+echo "<br>--2-<br>";
+
 $arr = $pdo->selectOrderByTest();
 var_dump($arr);
 
+echo "<br>--1-<br>";
+
 $arr = $pdo->selectSection(1);
 var_dump($arr);
+
+echo "<br>-0-<br>";
 
 $dto = new MSectionDto();
 $dto->setSecid(1);
