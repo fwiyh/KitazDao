@@ -89,12 +89,16 @@ echo "<br>-6-<br>";
 $pdo = new KitazDao("DImageDao");
 $arr = $pdo->selectTargetImage(1);
 var_dump($arr);
+
+echo "<br>-7-<br>";
+
 $arr = $pdo->selectBySectionArray(2,null);
 var_dump($arr);
 // バイナリ出力
 // header("Content-Type: ". $arr[0]["MIME"]);
 // fpassthru($arr[0]["FILEDATA"]);
 
+echo "<br>-8-<br>";
 
 $dao = new KitazDao("Table1Dao");
 $dto = new Table1Dto();

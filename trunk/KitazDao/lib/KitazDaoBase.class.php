@@ -165,7 +165,7 @@
 	}
 	
 	/**
-	 * カンマ区切りの数値文字列からfloat/int型配列を返す
+	 * カンマ区切りの数値文字列からfloat型配列を返す
 	 * @param unknown $str
 	 * @return multitype:
 	 */
@@ -174,11 +174,7 @@
 		$arr = explode(",", $str);
 		foreach ($arr as $r){
 			if (is_numeric($r)){
-				if (preg_match("/[^0-9]/", $r)){
-					$ret[] = (double)$r;
-				}else {
-					$ret[] = (int)$r;
-				}
+				$ret[] = (double)$r;
 			}else {
 				$ret[] = (string)$r;
 			}
