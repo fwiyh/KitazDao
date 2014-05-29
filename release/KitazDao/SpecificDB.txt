@@ -1,0 +1,28 @@
+* データベース固有の実装
+
+[Oracle(oci)]
+BLOBとCLOB型はINSERT・UPDATE文では特殊な記述が必要になります。
+ただし、PDOで指定するデータ型に関しては振る舞いが違います。
+バイナリであるBLOB型はLOBのままでよいのですが、
+テキスト型であるCLOBやNCLOBはPDOでいう文字型として扱わなければなりません。
+
+Entityでデータ型を指定する際は、以下の定数を割り当てる必要があります。
+
+KD_PARAM_OCI_BLOB　BLOB型
+KD_PARAM_OCI_CLOB　CLOB型
+
+INSERT・UPDATE文を組み立てるときに切り分けを行うために特別に定義する必要があります。
+
+
+[SQL Server(sqlsrv)]
+LOB型である、varbinary(max)型・image型・text型をバインドする際に、データ型を指定する必要があります。
+bindステートメントにてこれだけBindParamを使用しています。
+この際にデータ型を指定するPDO定数もsqlsrv用に存在しているため、バインド時の扱いが特殊になっています。
+
+Entityでデータ型を指定する際は、以下の定数を割り当てる必要があります。
+
+KD_PARAM_SQLSRV_BINARY　varbinary(max)型・image型
+KD_PARAM_SQLSRV_TEXT　　text型
+
+varchar(max)型は通常通り「KitazDao::KD_PARAM_STR」で利用できます。
+
