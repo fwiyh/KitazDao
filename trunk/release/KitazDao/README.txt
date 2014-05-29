@@ -429,3 +429,56 @@ Insert・Update・Delete文で用いるEntityのパスを通さずにすぐに�
 マジックメソッドによるSQL文の実行を行っているため、Eclipse等ではメソッド名が自動補完されません。
 Daoに記載されているようにメソッドを実行し、パラメータを適切に渡す必要があります。
 
+
+
+* データベース固有の実装
+
+[Oracle(oci)]
+BLOBとCLOB型はINSERT・UPDATE文では特殊な記述が必要になります。
+ただし、PDOで指定するデータ型に関しては振る舞いが違います。
+バイナリであるBLOB型はLOBのままでよいのですが、
+テキスト型であるCLOBやNCLOBはPDOでいう文字型として扱わなければなりません。
+
+Entityでデータ型を指定する際は、以下の定数を割り当てる必要があります。
+
+KD_PARAM_OCI_BLOB　BLOB型
+KD_PARAM_OCI_CLOB　CLOB型
+
+INSERT・UPDATE文を組み立てるときに切り分けを行うために特別に定義する必要があります。
+
+
+[SQL Server(sqlsrv)]
+LOB型である、varbinary(max)型・image型・text型をバインドする際に、データ型を指定する必要があります。
+bindステートメントにてこれだけBindParamを使用しています。
+この際にデータ型を指定するPDO定数もsqlsrv用に存在しているため、バインド時の扱いが特殊になっています。
+
+Entityでデータ型を指定する際は、以下の定数を割り当てる必要があります。
+
+KD_PARAM_SQLSRV_BINARY　varbinary(max)型・image型
+KD_PARAM_SQLSRV_TEXT　　text型
+
+varchar(max)型は通常通り「KitazDao::KD_PARAM_STR」で利用できます。
+
+
+
+* S2Daoとの違い
+S2Daoのような感覚で記述することを目的に作成していますが、S2Daoとの相違点を列挙します。
+
+
+[実装面]
+・サーバを参照してデータ型を自動判別せずにEntityやメソッドパラメータの情報を利用する。
+・Select文は配列でしか返さない。メソッド名の末尾で形式を判定していない。
+
+[Dao]
+・DaoがInterfaceではない。
+・Interfaceで設定するアノテーションがすべてメソッドパラメータに置き換えられている。
+・orderbyメソッドパラメータが存在する。
+・Updateメソッドに第２パラメータ移行が存在し第１パラメータのEntityそのものが更新内容にできる。
+
+[SQLファイル]
+・IF分岐処理をevalで処理している。
+・「--ELSE」コメントの代わりに「/*ELSE*/」になっている。
+
+[Entity]
+・各プロパティのデータ型をPDOのデータ型としてすべて定義しなければならない。
+・プライマリキーを指定しなければならない。
