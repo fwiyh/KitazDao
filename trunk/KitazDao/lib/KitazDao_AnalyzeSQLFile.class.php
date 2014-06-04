@@ -34,7 +34,7 @@ class KitazDao_AnalyzeSQLFile extends KitazDao_CreateQuery {
 	
 	private $paramArray = array();
 
-	private $aqlTypeParam;
+	private $sqlTypeParam;
 	
 	public function __construct(){
 		
@@ -54,7 +54,7 @@ class KitazDao_AnalyzeSQLFile extends KitazDao_CreateQuery {
 		$sqlPHArray = array();
 		$bindValues = array();
 		$pdoDataType = array();
-		$this->aqlTypeParam = $typeParam;
+		$this->sqlTypeParam = $typeParam;
 		
 		// 評価外コメントを除去する
 		$sql = $this->removeNoEvaluationComment($sql);
@@ -174,11 +174,11 @@ class KitazDao_AnalyzeSQLFile extends KitazDao_CreateQuery {
 				}else {
 					$targetPropName = $propName;
 				}
-				$dataType = parent::getPDODataType($entity, $targetPropName, $value, $this->aqlTypeParam, isset($entity));
+				$dataType = parent::getPDODataType($entity, $targetPropName, $value, $this->sqlTypeParam, isset($entity));
 				$pdoDataType[] = $dataType;
+				// paramArrayに追加
+				$this->setParamsArray($paramName, $value, $dataType);
 			}
-			// paramArrayに追加
-			$this->setParamsArray($paramName, $value, $dataType);
 		}
 		// 置換結果を返す
 		$sql = $str;
@@ -219,7 +219,7 @@ class KitazDao_AnalyzeSQLFile extends KitazDao_CreateQuery {
 					}else {
 						$targetPropName = $propName;
 					}
-					$dataType = parent::getPDODataType($entity, $targetPropName, $value, $this->aqlTypeParam, isset($entity));
+					$dataType = parent::getPDODataType($entity, $targetPropName, $value, $this->sqlTypeParam, isset($entity));
 					$pdoDataType[] = $dataType;
 					$varCount++;
 				}
@@ -331,7 +331,6 @@ class KitazDao_AnalyzeSQLFile extends KitazDao_CreateQuery {
 					}
 				}
 			}
-			
 		}
 		eval("if(". $evalStr ."){\$ret = true;}else{\$ret = false;};");
 		return $ret;
