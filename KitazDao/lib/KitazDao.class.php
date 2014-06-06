@@ -170,7 +170,6 @@ class KitazDao extends KitazDaoBase {
 	private function connect($dsn, $username, $passwd, $options = array()){
 		try {
 			$this->pdo = new PDO($dsn, $username, $passwd, $options);
-			$this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 		} catch (PDOException $e){
 			echo parent::getExceptionMessage($e, 1);
 			return false;

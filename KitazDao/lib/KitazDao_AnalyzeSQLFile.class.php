@@ -1,6 +1,6 @@
 <?php
-
 require_once __DIR__ .'/KitazDaoBase.class.php';
+require_once __DIR__ .'/KitazDao_GetDataType.class.php';
 
 /**
  * KitazDao
@@ -30,18 +30,22 @@ require_once __DIR__ .'/KitazDaoBase.class.php';
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-class KitazDao_AnalyzeSQLFile extends KitazDao_CreateQuery {
-	
-	private $paramArray = array();
-
-	private $sqlTypeParam;
-	
-	public function __construct(){
-		
-	}
+class KitazDao_AnalyzeSQLFile extends KitazDaoBase {
 	
 	/**
-	 * SQLパラメータ・SQLファイルの解釈を行う
+	 * 評価式判別に用いるパラメータ名・値・データ型を保存する領域
+	 * @var array
+	 */
+	private $paramArray = array();
+	/**
+	 * typeメソッドパラメータ配列
+	 * @var array
+	 */
+	private $sqlTypeParam = array();
+	
+	
+	/**
+	 * SQLメソッドパラメータ・SQLファイルの解釈を行う
 	 * @param array $params メソッドのパラメータ名配列
 	 * @param array $arguments 渡された引数の配列
 	 * @param array $typeParam データ型パラメータ
@@ -174,7 +178,7 @@ class KitazDao_AnalyzeSQLFile extends KitazDao_CreateQuery {
 				}else {
 					$targetPropName = $propName;
 				}
-				$dataType = parent::getPDODataType($entity, $targetPropName, $value, $this->sqlTypeParam, isset($entity));
+				$dataType = KitazDao_GetDataType::getPDODataType($entity, $targetPropName, $value, $this->sqlTypeParam);
 				$pdoDataType[] = $dataType;
 				// paramArrayに追加
 				$this->setParamsArray($paramName, $value, $dataType);
@@ -219,7 +223,7 @@ class KitazDao_AnalyzeSQLFile extends KitazDao_CreateQuery {
 					}else {
 						$targetPropName = $propName;
 					}
-					$dataType = parent::getPDODataType($entity, $targetPropName, $value, $this->sqlTypeParam, isset($entity));
+					$dataType =  KitazDao_GetDataType::getPDODataType($entity, $targetPropName, $value, $this->sqlTypeParam);
 					$pdoDataType[] = $dataType;
 					$varCount++;
 				}
