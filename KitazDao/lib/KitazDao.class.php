@@ -59,12 +59,11 @@ class KitazDao extends KitazDaoBase {
 	/**
 	 * construct DB接続してデータベース種別と対象のDaoを取得する
 	 * @param String $className Daoクラス名
-	 * @param String $cfgName 設定ファイル名
 	 * @return boolean falseは接続失敗
 	 */
-	public function __construct($className, $cfgName = "KitazDao.config"){
+	public function __construct($className){
 		// 設定ファイルを読み込む
-		$iniArr = parse_ini_file(substr(__DIR__, 0, strrpos(__DIR__, DIRECTORY_SEPARATOR)) . DIRECTORY_SEPARATOR . $cfgName, true);
+		$iniArr = parse_ini_file(substr(__DIR__, 0, strrpos(__DIR__, DIRECTORY_SEPARATOR)) . DIRECTORY_SEPARATOR ."KitazDao.config", true);
 		// 設定ファイルからDSN文字列作成
 		$dsn = $iniArr["DBSetting"]["dsn"];
 		$username = $iniArr["DBSetting"]["user"];
@@ -170,6 +169,7 @@ class KitazDao extends KitazDaoBase {
 	private function connect($dsn, $username, $passwd, $options = array()){
 		try {
 			$this->pdo = new PDO($dsn, $username, $passwd, $options);
+			$this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 		} catch (PDOException $e){
 			echo parent::getExceptionMessage($e, 1);
 			return false;

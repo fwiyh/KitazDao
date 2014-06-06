@@ -1,6 +1,6 @@
 <?php
+
 require_once __DIR__ .'/KitazDaoBase.class.php';
-require_once __DIR__ .'/KitazDao_GetDataType.class.php';
 
 /**
  * KitazDao
@@ -30,22 +30,18 @@ require_once __DIR__ .'/KitazDao_GetDataType.class.php';
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-class KitazDao_AnalyzeSQLFile extends KitazDaoBase {
+class KitazDao_AnalyzeSQLFile extends KitazDao_CreateQuery {
 	
-	/**
-	 * 評価式判別に用いるパラメータ名・値・データ型を保存する領域
-	 * @var array
-	 */
 	private $paramArray = array();
-	/**
-	 * typeメソッドパラメータ配列
-	 * @var array
-	 */
-	private $sqlTypeParam = array();
+
+	private $aqlTypeParam;
 	
+	public function __construct(){
+		
+	}
 	
 	/**
-	 * SQLメソッドパラメータ・SQLファイルの解釈を行う
+	 * SQLパラメータ・SQLファイルの解釈を行う
 	 * @param array $params メソッドのパラメータ名配列
 	 * @param array $arguments 渡された引数の配列
 	 * @param array $typeParam データ型パラメータ
@@ -58,7 +54,7 @@ class KitazDao_AnalyzeSQLFile extends KitazDaoBase {
 		$sqlPHArray = array();
 		$bindValues = array();
 		$pdoDataType = array();
-		$this->sqlTypeParam = $typeParam;
+		$this->aqlTypeParam = $typeParam;
 		
 		// 評価外コメントを除去する
 		$sql = $this->removeNoEvaluationComment($sql);
@@ -178,11 +174,11 @@ class KitazDao_AnalyzeSQLFile extends KitazDaoBase {
 				}else {
 					$targetPropName = $propName;
 				}
-				$dataType = KitazDao_GetDataType::getPDODataType($entity, $targetPropName, $value, $this->sqlTypeParam);
+				$dataType = parent::getPDODataType($entity, $targetPropName, $value, $this->aqlTypeParam, isset($entity));
 				$pdoDataType[] = $dataType;
-				// paramArrayに追加
-				$this->setParamsArray($paramName, $value, $dataType);
 			}
+			// paramArrayに追加
+			$this->setParamsArray($paramName, $value, $dataType);
 		}
 		// 置換結果を返す
 		$sql = $str;
@@ -223,7 +219,7 @@ class KitazDao_AnalyzeSQLFile extends KitazDaoBase {
 					}else {
 						$targetPropName = $propName;
 					}
-					$dataType =  KitazDao_GetDataType::getPDODataType($entity, $targetPropName, $value, $this->sqlTypeParam);
+					$dataType = parent::getPDODataType($entity, $targetPropName, $value, $this->aqlTypeParam, isset($entity));
 					$pdoDataType[] = $dataType;
 					$varCount++;
 				}
@@ -335,6 +331,7 @@ class KitazDao_AnalyzeSQLFile extends KitazDaoBase {
 					}
 				}
 			}
+			
 		}
 		eval("if(". $evalStr ."){\$ret = true;}else{\$ret = false;};");
 		return $ret;

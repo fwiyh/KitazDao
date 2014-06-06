@@ -112,7 +112,7 @@ echo "<br>-8-<br>";
 $dao = new KitazDao("Table1Dao");
 $dto = new Table1Dto();
 // $dto->setAttribute(0);
-$dto->setTname("null");
+
 $arr = $dao->selectSQLFile($dto);
 var_dump($arr);
 
