@@ -328,7 +328,7 @@ class KitazDao_CreateQuery extends KitazDaoBase {
 					$this->sqlPHArray[] = ":". $column;
 					$this->bindValues[] = $val;
 					// Entityの定数からPDOのデータ型を取得する
-					$this->pdoDataType[] = $this->getPDODataType(get_class($arguments[0]), $column, $val, $this->typeParam, true);
+					$this->pdoDataType[] = KitazDao_GetDataType::getPDODataType(get_class($arguments[0]), $column, $val, $this->typeParam);
 				}
 			}
 		}
@@ -491,7 +491,7 @@ class KitazDao_CreateQuery extends KitazDaoBase {
 		$this->sqlSetArray[] =  $column ."=". ":". $column;
 		$this->sqlPHArray[] = ":". $column;
 		$this->bindValues[] = $value;
-		$this->pdoDataType[] = $this->getPDODataType(get_class($arguments), $column, $value, $this->typeParam, true);
+		$this->pdoDataType[] =  KitazDao_GetDataType::getPDODataType(get_class($arguments), $column, $value, $this->typeParam);
 	}
 	
 	/**
@@ -503,7 +503,7 @@ class KitazDao_CreateQuery extends KitazDaoBase {
 		$this->sqlConditionArray[] = $column ."=".":". $prefix . $column;
 		$this->sqlPHArray[] = ":". $prefix . $column;
 		$this->bindValues[] = $value;
-		$this->pdoDataType[] = $this->getPDODataType(get_class($this->entity), $column, $value, $this->typeParam, true);
+		$this->pdoDataType[] =  KitazDao_GetDataType::getPDODataType(get_class($this->entity), $column, $value, $this->typeParam);
 	}
 	/**
 	 * COLUMN IN (CONDITIONS) ステートメント作成
@@ -515,13 +515,14 @@ class KitazDao_CreateQuery extends KitazDaoBase {
 		$conditionArray = array();
 		// 配列数を取得
 		$num = count($valArray);
+		
 		// 変数の配列を取得する
 		for ($i = 0; $i < $num; $i++){
 			// プレースホルダーに「_IN_X」を付与
 			$conditionArray[] = ":". $prefix . $column . "_IN_". $i;
 			$this->sqlPHArray[] = ":". $prefix . $column . "_IN_". $i;
 			$this->bindValues[] = $valArray[$i];
-			$this->pdoDataType[] = $this->getPDODataType(get_class($this->entity), $column, $valArray[$i], $this->typeParam, true);
+			$this->pdoDataType[] =  KitazDao_GetDataType::getPDODataType(get_class($this->entity), $column, $valArray[$i], $this->typeParam);
 		}
 		if ($num > 0){
 			$this->sqlConditionArray[] = $column ." IN (". implode(",", $conditionArray) .")";
@@ -541,38 +542,9 @@ class KitazDao_CreateQuery extends KitazDaoBase {
 		
 		$this->sqlPHArray[] = ":$paramName";
 		$this->bindValues[] = $value;
-		$this->pdoDataType[] = $this->getPDODataType(get_class($this->entity), "", $value, $this->typeParam, false);
+		$this->pdoDataType[] =  KitazDao_GetDataType::getPDODataType(get_class($this->entity), $paramName, $value, $this->typeParam);
 	}
-	/**
-	 * PDOのデータタイプを返す
-	 * @param String $className Entityのクラス名
-	 * @param String $column カラム名
-	 * @param Variant $value データの値
-	 * @param boolean $isEntity true:Entity由来、false:データから判別
-	 * @return Integer KD_TYPE_* PDOのデータ型
-	 */
-	public function getPDODataType($className, $column, $value, $sqltypeParam, $isEntity){
-		$dataType = "";
-		// データ型パラメータが与えられている場合はこれを優先する
-		foreach ($sqltypeParam as $key => $v){
-			// パラメータが存在すればこれを優先する
-			if (strtoupper($key) == $column){
-				$dataType = $v;
-			}
-		}
-		// パラメータが与えられていない場合はEntityかデータで判別する
-		if (strlen($dataType) == 0){
-			if ($isEntity){
-				$dataType = constant($className ."::". $column ."_TYPE");
-			}else {
-				// データ型の自動取得を行う
-				$getDataType = new KitazDao_GetDataType();
-				$dataType = $getDataType->getDataType($value);
-				unset($getDataType);
-			}
-		}
-		return $dataType;
-	}
+
 	/**
 	 * プリペア
 	 * @param String $sql プレースホルダー付SQL文字列
