@@ -1,5 +1,4 @@
 <?php
-
 require_once __DIR__ .'/KitazDaoBase.class.php';
 
 /**
@@ -88,58 +87,30 @@ class KitazDao_GetDataType extends KitazDaoBase {
 	 * @param String $className Entityのクラス名
 	 * @param String $column カラム名
 	 * @param Variant $value データの値
-	 * @param array $typeParam Select文のtypeパラメータ配列（なければarray()を入れる）
-	 * @param boolean $isEntity true:Entity由来、false:データから判別
+	 * @param array $sqltypeParam typeメソッドパラメータの値
 	 * @return Integer KD_TYPE_* PDOのデータ型
 	 */
-	public function getPDODataType($className, $column, $value, $typeParam, $isEntity){
-		$dataType = null;
-		// データ型パラメータが与えられている場合はこれを優先する
-		$dataType = $this->getPDODataTypeFromTypeParam($typeParam, $column);
-		
-		// パラメータが与えられていない場合はEntityかデータで判別する
-		if ($dataType == null){
-			if ($isEntity){
-				$dataType = $this->getPDODataTypeFromEntity($className, $column);
-			}else {
-				// データ型の自動取得を行う
-				$dataType = $this->getDataType($value);
-			}
-		}
-		return $dataType;
-	}
-	
-	/**
-	 * カラムからPDOデータ型を取得する
-	 * @param unknown $typeParam
-	 * @param unknown $column
-	 * @return Integer データ型　ない場合はnull
-	 */
-	public function getPDODataTypeFromTypeParam($typeParam, $column){
-		
-		$dataType = null;
-		// データ型パラメータが与えられている場合はこれを優先する
-		foreach ($typeParam as $key => $v){
+	public static function getPDODataType($className, $column, $value, $sqltypeParam){
+		/**
+		 * 優先順位
+		 * typeメソッドパラメータ→Entity→値判断
+		 */
+		$evalColumn = strtoupper($column);
+		// typeメソッドパラメータを優先的に取得する
+		foreach ($sqltypeParam as $key => $v){
 			// パラメータが存在すればこれを優先する
-			if (strtoupper($key) == $column){
-				$dataType = $v;
+			if (strtoupper($key) == $evalColumn){
+				return $v;
 			}
 		}
-		return $dataType;	
-	}
-	
-	/**
-	 * Entityからデータ型を取得する
-	 * @return Integer PDOデータ型　取得できない場合はSTRING扱い
-	 */
-	public function getPDODataTypeFromEntity($className, $column){
-		try{
-			$dataType = constant($className ."::". strtoupper($column) ."_TYPE");
-		}catch (Exception $e){
-			$dataType = KitazDao::KD_PARAM_STR;
+		// Entityクラスがあってここから定数を取得できるときにEntityからデータ型を取得する
+		if (class_exists($className)){
+			$ref = new ReflectionClass($className);
+			if ($ref->hasConstant($evalColumn ."_TYPE")){
+				return constant($className ."::". $evalColumn ."_TYPE");
+			}
 		}
-		return $dataType;
+		// Entityから取得できない場合は値から判断する
+		return self::getDataType($value);
 	}
-	
-	
 }
