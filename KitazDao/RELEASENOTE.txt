@@ -1,3 +1,18 @@
+0.3.0
+* 検証済みDBの追加
+Windows上で動くMSAccessを同じ環境にあるIISからODBC経由でアクセスできました。
+ただし渡す文字列、SQLファイルをすべてSJIS(SJIS-WIN)にする必要があります。
+
+* 機能修正
+・異常発生時にExceptionを投げるようにしました。
+
+* 不具合対応
+・設定ファイルのPDOドライバオプションが反映されるようになりました。
+連想配列を記述するように、１連想配列をカンマ区切りにして「=>」で配列を作成できます。
+例）option="PDO::ATTR_ORACLE_NULLS => PDO::NULL_NATURAL, PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION"
+・READMEの修正をしました。
+
+
 0.2.0　
 * 機能追加
 ・インスタンス作成時に別の設定ファイルを指定するオプション
