@@ -8,13 +8,14 @@ Oracle11gでS2Dao.php5を用いてLOB型を取りにいけなかったため自�
 [動作環境]
 PHP5.3+
 各種PDO
-Oracle11g, mysql5.x, Postgresql 8.4.21, SQL Server 2008 R2
+Oracle11g, mysql5.x, Postgresql 8.4.21, SQL Server 2008 R2, ODBC(MSAccess)
 
 [動作テストを行ったDB]
 Oracle11.2(windows)
 mysql5.1(FreeBSD8.4-p1)
 Postgresql 8.4.21(windows)
 SQL Server 2008 R2
+Access 2007(mdb形式)
 
 [インストール]
 KitazDaoフォルダをプログラムが読み取り可能な場所に格納してください。
@@ -214,7 +215,8 @@ Select文ではEntityの定数やメソッドなどを用いて出力を行っ�
 
 
 [Daoの作り方]
-S2Dao.php5ではInterfaceですが、アノテーションを扱いきれなかったために、普通のクラスで宣言します。
+S2Dao.php5ではInterfaceですが、KitazDaoでは普通のクラスになっています。
+そのためメソッドの予測機能がメソッド名を列挙してくれません。
 
 class MSectionDao {
 	
@@ -326,10 +328,10 @@ order by句を記述します。
 SQLの自動生成において複数の結果が期待できるときに設定することで、出力順を制御できます。
 
 ３　columnsメソッドパラメータ
-SELECT文の「SELECT xxx FROM yyy」でいう結果を出力するカラム名を指定するメソッドパタメータです。
+SELECT文の「SELECT xxx FROM yyy」でいうxxxを指定するパラメータです。
 これが設定されているSQL文では最優先されます。
 基本的にSELECT文は全カラム出力（*句）にしているため、
-SQL文の出力を抑えたり、別名を割り当てたいとき（count(*)句を利用するときなど）に利用します。
+結果の出力を抑えたり、別名を割り当てたいとき（count(*)句を利用するときなど）に利用します。
 
 ４　sqlメソッドパラメータ
 DaoにSQL文そのものを記述することも可能です。
@@ -370,6 +372,7 @@ LEFT JOIN
 ON
 	S.SECID = E.SECID
 /*BEGIN*/
+WHERE
 -- param of section name
 /*IF dto.secName != ""*/
 	E.SECNAME LIKE /*dto.secName*/'%Account%'
@@ -401,9 +404,10 @@ SELECT /*COL*/ FROM TABLE1
 PDOの処理で数値かクォート付きの文字列に置き換えられるためです。
 出力対象を動的に変えたい場合はIF分岐処理を用います。
 
+SELECT /*IF p == "TID"*/TID/*ELSE*/TNAME/*END*/ FROM TABLE1
 
 ３　分岐処理「IF」
-/*IF xxxxxx*/yyy=zzz/*END/と記述している場合は、IF文分岐処理が真の場合にIF～ENDの間を有効にします。
+/*IF xxxxxx*/yyy=zzz/*END*/と記述している場合は、IF文分岐処理が真の場合にIF～ENDの間を有効にします。
 IF文の処理はevalで処理し、引数はバックスラッシュで処理して置き換えます。
 したがって「==」と「===」とでは挙動が変わることに注意が必要です。
 コメントパラメータはPDOのプレースホルダーに置き変えますが、
@@ -472,6 +476,14 @@ KD_PARAM_SQLSRV_TEXT　　text型
 
 varchar(max)型は通常通り「KitazDao::KD_PARAM_STR」で利用できます。
 
+[ODBCによるMSAccess接続]
+これはwindows上でPHPを動かす際の注意事項になります。
+ODBC経由とはいえ処理を行うのはAccessのmdbやaccdbファイルです。
+従ってマルチバイトが入るであろうEntity・SQLファイルをSJIS(SJIS-WIN)に変換する必要があります。
+マルチバイト文字ではない英数字記号であっても文字列であればすべてを
+mb_convert_encoding関数を用いてSJIS(SJIS-WIN)に変換しなければなりません。
+UNIX ODBCに関しては未検証です。
+
 
 
 * S2Daoとの違い
@@ -492,7 +504,7 @@ S2Daoのような感覚で記述することを目的に作成していますが
 
 [SQLファイル]
 ・IF分岐処理をevalで処理している。
-・「--ELSE」コメントの代わりに「/*ELSE*/」になっている。
+・「--ELSE」コメントの代わりに「/*ELSE*/」になっている（intramartの仕様？）。
 
 [Entity]
 ・各プロパティのデータ型をPDOのデータ型としてすべて定義しなければならない。
