@@ -1,8 +1,7 @@
 <?php
-
-require_once __DIR__ .'/KitazDaoBase.class.php';
-require_once __DIR__ .'/KitazDao_GetDataType.class.php';
-require_once __DIR__ .'/KitazDao_AnalyzeSQLFile.class.php';
+require_once __DIR__ . DIRECTORY_SEPARATOR . "KitazDaoBase.class.php";
+require_once __DIR__ . DIRECTORY_SEPARATOR . "KitazDao_GetDataType.class.php";
+require_once __DIR__ . DIRECTORY_SEPARATOR . "KitazDao_AnalyzeSQLFile.class.php";
 
 /**
  * KitazDao
@@ -224,16 +223,13 @@ class KitazDao_CreateQuery extends KitazDaoBase {
 	 * @param unknown $arguments
 	 */
 	public function createSQLStatementFromFile($methodName, $arguments){
-		
 		// メソッドのパラメータ名を取得する
 		$ref = new ReflectionMethod(get_class($this->dao), $methodName);
 		$params = $ref->getParameters();
-	
 		// SQL文の分析解釈を行う
 		$analyzeSQLFile = new KitazDao_AnalyzeSQLFile();
 		$analyzeSQLFile->analyze($params, $arguments, $this->typeParam, $this->sqlParam, $this->sqlPHArray, $this->bindValues, $this->pdoDataType);
 		unset($analyzeSQLFile);
-		
 		return $this->sqlParam;
 	}
 	
@@ -244,12 +240,10 @@ class KitazDao_CreateQuery extends KitazDaoBase {
 	 * @return String SQL文
 	 */
 	public function createSelectStatement($methodName, $arguments){
-		
 		// カラムパラメータがなければ「*」にする
 		if (strlen($this->columnsParam) == 0){
 			$this->columnsParam = "*";
 		}
-		
 		// メソッドパラメータから条件式を作成する
 		$ref = new ReflectionMethod(get_class($this->dao), $methodName);
 		$params = $ref->getParameters();
@@ -269,10 +263,8 @@ class KitazDao_CreateQuery extends KitazDaoBase {
 				}
 			}
 		}
-		
 		// SELECT文を作成する
 		$sql = $this->buildSelectSQLString();
-		
 		return $sql;
 	}
 	/**
@@ -283,7 +275,6 @@ class KitazDao_CreateQuery extends KitazDaoBase {
 		// Entityから対象テーブルを取得する
 		$entity = $this->entity;
 		$tableName = $entity::TABLE;
-		
 		// SQL文字列作成
 		$sql = "SELECT ". $this->columnsParam ." FROM $tableName";
 		// whereメソッドパラメータを優先する
@@ -303,7 +294,6 @@ class KitazDao_CreateQuery extends KitazDaoBase {
 			}
 			$sql .= $buf . $this->orderbyParam;
 		}
-		
 		return $sql;
 	}
 	
@@ -314,7 +304,6 @@ class KitazDao_CreateQuery extends KitazDaoBase {
 	 * @return String SQL文
 	 */
 	public function createInsertStatement($methodName, $arguments){
-		
 		// パラメータのEntityのメソッドごとにSQL文字列とプレースホルダーを生成する
 		foreach (get_class_methods($arguments[0]) as $m){
 			// getメソッドからパラメータ取得を行う
@@ -336,7 +325,6 @@ class KitazDao_CreateQuery extends KitazDaoBase {
 		$tableName = $arguments[0]::TABLE;
 		// SQL文を組み立てる
 		$sql = $this->buildInsertSQLString($tableName);
-		
 		return $sql;
 	}
 	/**
@@ -357,7 +345,6 @@ class KitazDao_CreateQuery extends KitazDaoBase {
 	 * @return String SQL文
 	 */
 	public function createUpdateStatement($methodName, $arguments){
-		
 		//
 		// パラメータがEntityのみの場合はEntityのPRIMARY_KEYを条件式に設定する
 		// 第２パラメータ以降がある場合は条件式はすべてパラメータのもののみにする
@@ -366,7 +353,6 @@ class KitazDao_CreateQuery extends KitazDaoBase {
 		$paramNum = count($arguments);
 		// PRIMARY_KEYの値を配列として取得する
 		$pkeyColumn = strtoupper($arguments[0]::PRIMARY_KEY);
-		
 		foreach (get_class_methods($arguments[0]) as $m){
 			// getメソッドからパラメータ取得を行う
 			if (substr($m, 0, 3) == "get"){
@@ -411,7 +397,6 @@ class KitazDao_CreateQuery extends KitazDaoBase {
 		$tableName = $arguments[0]::TABLE;
 		// SQL文字列作成
 		$sql = $this->buildUpdateSQLString($tableName);
-		
 		return $sql;
 	}
 	/**
@@ -441,7 +426,6 @@ class KitazDao_CreateQuery extends KitazDaoBase {
 	 * @return boolean
 	 */
 	public function createDeleteStatement($methodName, $arguments){
-		
 		// パラメータのEntityのメソッドごとにSQL文字列とプレースホルダーを生成する
 		foreach (get_class_methods($arguments[0]) as $m){
 			// getメソッドからパラメータ取得を行う
@@ -458,7 +442,6 @@ class KitazDao_CreateQuery extends KitazDaoBase {
 		$tableName = $arguments[0]::TABLE;
 		// SQL文を組み立てる
 		$sql = $this->buildDeleteSQLString($tableName);
-		
 		return $sql;
 	}
 	/**
@@ -536,10 +519,8 @@ class KitazDao_CreateQuery extends KitazDaoBase {
 	 * @param array $pdoDataType PDOデータ型配列
 	 */
 	public function setConditionBindValStatement($value, $paramName){
-		
 		$pos = strpos($this->whereParam, "?");
 		$this->whereParam = substr($this->whereParam, 0, $pos) . ":$paramName ". substr($this->whereParam, $pos+1);
-		
 		$this->sqlPHArray[] = ":$paramName";
 		$this->bindValues[] = $value;
 		$this->pdoDataType[] =  KitazDao_GetDataType::getPDODataType(get_class($this->entity), $paramName, $value, $this->typeParam);
@@ -553,8 +534,7 @@ class KitazDao_CreateQuery extends KitazDaoBase {
 	public function prepare($sql){
 		$stmt = $this->pdo->prepare($sql);
 		if (!$stmt){
-			parent::getPDOErrorInfoMessage($this->pdo);
-			return false;
+			throw new KitazDaoException(9);
 		}
 		return $stmt;
 	}

@@ -1,6 +1,6 @@
 <?php
-require_once __DIR__ .'/KitazDaoBase.class.php';
-require_once __DIR__ .'/KitazDao_GetDataType.class.php';
+require_once __DIR__ . DIRECTORY_SEPARATOR . "KitazDaoBase.class.php";
+require_once __DIR__ . DIRECTORY_SEPARATOR . "KitazDao_GetDataType.class.php";
 
 /**
  * KitazDao

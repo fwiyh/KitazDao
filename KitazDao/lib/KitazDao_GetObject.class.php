@@ -1,6 +1,5 @@
 <?php
-
-require_once __DIR__ .'/KitazDaoBase.class.php';
+require_once __DIR__ . DIRECTORY_SEPARATOR . "KitazDaoBase.class.php";
 
 /**
  * KitazDao
@@ -37,12 +36,11 @@ class KitazDao_GetObject extends KitazDaoBase {
 	 * @param String $className Daoクラス名
 	 * @return variant 取得失敗:false 取得成功：Daoクラス
 	 */
-	public function getDaoClass($className){
+	public static function getDaoClass($className){
 		try {
-			require_once KD_DAO_PATH ."/". $className .".class.php";
+			require_once KD_DAO_PATH . DIRECTORY_SEPARATOR . $className .".class.php";
 			return new $className();
 		}catch (Exception $e) {
-			echo parent::getCustomExceptionMessage(5);
 			return false;
 		}
 	}
@@ -52,11 +50,10 @@ class KitazDao_GetObject extends KitazDaoBase {
 	 * @param Object $daoClass
 	 * @return variant 取得失敗:false 取得成功：String Entity名
 	 */
-	public function getEntityNameByDao($daoClass){
+	public static function getEntityNameByDao($daoClass){
 		try {
 			return $daoClass::BEAN;
 		} catch(Exception $e){
-			echo parent::getCustomExceptionMessage(7);
 			return false;
 		}
 	}
@@ -66,12 +63,11 @@ class KitazDao_GetObject extends KitazDaoBase {
 	 * @param String $EntityName
 	 * @return variant 取得失敗:false 取得成功：Dtoクラス
 	 */
-	public function getEntityClass($entityName){
+	public static function getEntityClass($entityName){
 		try {
-			require_once KD_ENTITY_PATH ."/". $entityName .".class.php";
+			require_once KD_ENTITY_PATH . DIRECTORY_SEPARATOR . $entityName .".class.php";
 			return new $entityName();
 		}catch (Exception $e) {
-			echo parent::getCustomExceptionMessage(6);
 			return false;
 		}
 	}
