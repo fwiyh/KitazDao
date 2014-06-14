@@ -1,6 +1,5 @@
 <?php
-
-require_once __DIR__ .'/KitazDao_CreateQuery.class.php';
+require_once __DIR__ . DIRECTORY_SEPARATOR . "KitazDao_CreateQuery.class.php";
 
 /**
  * KitazDao

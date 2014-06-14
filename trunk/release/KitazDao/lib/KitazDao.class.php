@@ -1,8 +1,8 @@
 <?php
-require_once __DIR__ .'/KitazDao_GetDataType.class.php';
-require_once __DIR__ .'/KitazDao_GetObject.class.php';
-require_once __DIR__ .'/KitazDao_OutputSelectQuery.class.php';
-require_once __DIR__ .'/KitazDaoBase.class.php';
+require_once __DIR__ . DIRECTORY_SEPARATOR . "KitazDao_GetDataType.class.php";
+require_once __DIR__ . DIRECTORY_SEPARATOR . "KitazDao_GetObject.class.php";
+require_once __DIR__ . DIRECTORY_SEPARATOR . "KitazDao_OutputSelectQuery.class.php";
+require_once __DIR__ . DIRECTORY_SEPARATOR . "KitazDaoBase.class.php";
 
 /**
  * KitazDao
@@ -63,54 +63,38 @@ class KitazDao extends KitazDaoBase {
 	 * @return boolean falseは接続失敗
 	 */
 	public function __construct($className, $cfgName = "KitazDao.config"){
-		// 設定ファイルを読み込む
-		$iniArr = parse_ini_file(substr(__DIR__, 0, strrpos(__DIR__, DIRECTORY_SEPARATOR)) . DIRECTORY_SEPARATOR . $cfgName, true);
-		// 設定ファイルからDSN文字列作成
-		$dsn = $iniArr["DBSetting"]["dsn"];
-		$username = $iniArr["DBSetting"]["user"];
-		$passwd = $iniArr["DBSetting"]["password"];
-		$opStr = $iniArr["DBSetting"]["option"];
-		
-		// PDO接続オプションの配列作成
-		$opArr = explode(",", $opStr);
-		$options = array();
-		foreach ($opArr as $a){
-			$opElm = explode("=>", $a);
-			$options[$opElm[0]] = $opElm[1];
-		}
-		
+		// 設定ファイルからDSN情報を取得
+		$dsnArr = array();
+// 		try {
+			$dsnArr = $this->getConfig($cfgName);
+// 		} catch (Exception $e){
+// 			throw new Exception(null, null ,$e);
+// 		}
+			
 		// DB接続
-		if (!$this->connect($dsn, $username, $passwd, $options)){
-			return false;
+		if (!$this->connect($dsnArr)){
+			throw new KitazDaoException(3);
 		}
 		
 		// DSN文字列からデータベース種別を判別
-		$this->dbType = substr($dsn, 0, strpos($dsn, ":"));
+		$this->dbType = substr($dsnArr["dsn"], 0, strpos($dsnArr["dsn"], ":"));
 		
 		//# Dao/Entityクラス取得
-		$getObject = new KitazDao_GetObject();
 		// Daoクラスの取得
-		$this->loadDao = $getObject->getDaoClass($className);
+		$this->loadDao = KitazDao_GetObject::getDaoClass($className);
 		if ($this->loadDao === false){
-			unset($getObject);
-			$this->pdo = null;
-			return false;
+			throw new KitazDaoException(4);
 		}
 		// Daoに定義されているEntity名を取得する
-		$entityName = $getObject->getEntityNameByDao($this->loadDao);
+		$entityName = KitazDao_GetObject::getEntityNameByDao($this->loadDao);
 		if ($entityName === false){
-			unset($getObject);
-			$this->pdo = null;
-			return false;
+			throw new KitazDaoException(5);
 		}
 		// Entityを取得
-		$this->loadEntity = $getObject->getEntityClass($entityName);
+		$this->loadEntity = KitazDao_GetObject::getEntityClass($entityName);
 		if ($this->loadEntity === false){
-			unset($getObject);
-			$this->pdo = null;
-			return false;
+			throw new KitazDaoException(6);
 		}
-		unset($getObject);
 	}
 	/**
 	 * destructマジックメソッド
@@ -129,8 +113,7 @@ class KitazDao extends KitazDaoBase {
 		
 		// dao設定メソッドとしてアクセスする
 		if (array_search($name, get_class_methods(get_class($this->loadDao))) === false){
-			echo parent::getCustomExceptionMessage(4);
-			return false;
+			throw new KitazDaoException(7);
 		}
 		// クエリの実行
 		return $this->executeMethod($name, $arguments);
@@ -160,18 +143,69 @@ class KitazDao extends KitazDaoBase {
 	
 	//# private methods
 	/**
+	 * 設定ファイルからDSN情報を取得
+	 * @param unknown $cfgName
+	 * @throws KitazDaoException
+	 * @return PDO設定情報(dsn,username,passwd,options(array)):
+	 */
+	private function getConfig($cfgName){
+		// 戻り値
+		$ret = array();
+		
+		// 設定ファイルを読み込む
+		$iniArr = parse_ini_file(substr(__DIR__, 0, strrpos(__DIR__, DIRECTORY_SEPARATOR)) . DIRECTORY_SEPARATOR . $cfgName, true);
+		if ($iniArr === false){
+			throw new KitazDaoException(1);
+		}
+		
+		// 設定ファイルからDSN文字列作成
+		if (!array_key_exists("DBSetting", $iniArr)){
+			throw new KitazDaoException(2, "NO [DBsetting] SECTION.");
+		}
+		$cfgmsg = array();
+		if (!array_key_exists("dsn", $iniArr["DBSetting"])){
+			$cfgmsg[] = "\"dsn\"";
+		}
+		if (!array_key_exists("user", $iniArr["DBSetting"])){
+			$cfgmsg[] = "\"user\"";
+		}
+		if (!array_key_exists("password", $iniArr["DBSetting"])){
+			$cfgmsg[] = "\"password\"";
+		}
+		if (count($cfgmsg) > 0){
+			throw new KitazDaoException(2, "NO PROPERTY: ". implode(",", $cfgmsg));
+		}
+		$ret["dsn"] = $iniArr["DBSetting"]["dsn"];
+		$ret["username"] = $iniArr["DBSetting"]["user"];
+		$ret["passwd"] = $iniArr["DBSetting"]["password"];
+		
+		// PDO接続オプションの配列作成
+		$options = array();
+		if (array_key_exists("option", $iniArr["DBSetting"])){
+			$opStr = $iniArr["DBSetting"]["option"];
+			$opArr = explode(",", $opStr);
+			try {
+				foreach ($opArr as $a){
+					$opElm = explode("=>", $a);
+					eval("\$options[". trim($opElm[0]) ."] = " . trim($opElm[1]) .";");
+				}
+			}catch (Exception $e){
+				throw new KitazDaoException(2, "IRRIGAL OPTION ARRAY. ", $e);
+			}
+		}
+		$ret["options"] = $options;
+		return $ret;
+	}
+	
+	/**
 	 * DB接続処理
-	 * @param String $dsn PDOで使うDSN
-	 * @param String $username DBのユーザー名
-	 * @param String $passwd DBのパスワード
-	 * @param array $options PDOで指定できるドライバオプション(ない場合は空の配列)
+	 * @param array $dsnArr 設定ファイルから取得したDSN情報
 	 * @return DB接続成否
 	 */
-	private function connect($dsn, $username, $passwd, $options = array()){
+	private function connect($dsmArr){
 		try {
-			$this->pdo = new PDO($dsn, $username, $passwd, $options);
+			$this->pdo = new PDO($dsmArr["dsn"], $dsmArr["username"], $dsmArr["passwd"], $dsmArr["options"]);
 		} catch (PDOException $e){
-			echo parent::getExceptionMessage($e, 1);
 			return false;
 		}
 		return true;
@@ -196,11 +230,9 @@ class KitazDao extends KitazDaoBase {
 		
 		// クエリ作成オブジェクトの作成
 		$stmt = false;
-		
-		$createQuery = new $extClassName($this->pdo, $this->loadDao, $this->loadEntity);
-		
-		// メソッド名からSQL種別を取得してSQL文字列を作成する
 		$queryType = KitazDao_GetDataType::getQueryType(get_class($this->loadDao), $methodName);
+		$createQuery = new $extClassName($this->pdo, $this->loadDao, $this->loadEntity);
+		// メソッド名からSQL種別を取得してSQL文字列を作成する
 		$stmt = $createQuery->buildStatement($queryType, $methodName, $arguments);
 		unset($createQuery);
 		$ret = "";
@@ -209,16 +241,13 @@ class KitazDao extends KitazDaoBase {
 			// no output warning for INSERT/UPDATE from OCI-CLOB
 			$ret = @$stmt->execute();
 		} catch (PDOException $e){
-			echo parent::getExceptionMessage($e, 2);
-			return false;
+			throw new KitazDaoException(8);
 		} catch (Exception $e){
-			echo parent::getExceptionMessage($e, 2);
-			return false;
+			throw new KitazDaoException(8, null, $e);
 		}
 		// falseの場合は実行時エラー
 		if (empty($ret)){
-			echo parent::getCustomExceptionMessage(9);
-			return false;
+			throw new KitazDaoException(8, "NOT RETURN EXECUTION.");
 		}
 		// select文は全配列を返す
 		if ($queryType == parent::KD_STMT_SELECT){
