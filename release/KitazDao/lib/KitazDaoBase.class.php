@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . DIRECTORY_SEPARATOR . "KitazDaoException.class.php";
 /**
  * KitazDao
  * @name KitazDaoBase
@@ -28,26 +29,6 @@
 // THE SOFTWARE.
 
  class KitazDaoBase {
-	/**
-	 * Exceptionメッセージの格納場所
-	 * @var メッセージ文字列の配列
-	 */
-	private $messages = array();
-	
-	/**
-	 * エラーメッセージ集
-	 */
-	private $msgUnknown = "未設定のエラー";
-	private $msg1 = "データベース接続に失敗しました。";
-	private $msg2 = "SQL実行エラー。SQL文が作成されていない、キーが重複しているなどの問題があります。";
-	private $msg3 = "クエリ種別判定エラー。";
-	private $msg4 = "指定されたDaoにメソッドがありません。";
-	private $msg5 = "Daoのパスが正しくないか、Daoクラスが存在しません。";
-	private $msg6 = "Entityのパスが正しくないか、Entityクラスが存在しません。";
-	private $msg7 = "DaoにBEANの指定がありません。";
-	private $msg8 = "第1パラメータに実行で必要になるEntityが渡されていません。";
-	private $msg9 = "SQL実行時にエラーが発生しました。";
-	
 	/**
 	 * メソッド種別(Insert)
 	 * @var Integer
@@ -129,42 +110,6 @@
 	const KD_PARAM_SQLSRV_BINARY = 35;
 	
 	/**
-	 * PDOExcetionによるエラーメッセージの作成～取得
-	 * @param PDOException $e PDO例外オブジェクト
-	 * @param Integer $msgId メッセージID 
-	 * @return string エラー文字列
-	 */
-	protected function getExceptionMessage($e, $msgId){
-		try {
-			return "KitazDao catch PDOException:[". $e->getCode() ."]". $e->getMessage() ."<br />". $this->getMessage($msgId);
-		} catch (Exception $ex){
-			echo "KitazDaoBase(getExceptionMessage) catch Exception:[". $ex->getCode() ."]". $ex->getMessage();
-		}
-	}
-	/**
-	 * PDOException以外のカスタムエラーを返す
-	 * @param Integer $msgId メッセージID
-	 * @return string エラーメッセージ
-	 */
-	protected function getCustomExceptionMessage($msgId){
-		return "KitazDao catch CustomException:[". $msgId ."]". $this->getMessage($msgId);
-	}
-	/**
-	 * PDOエラー用
-	 * @param PDOException $e
-	 * @param unknown $msgId
-	 * @return string
-	 */
-	protected function getPDOErrorInfoMessage($pdo){
-		try {
-			$pi = $pdo->errorInfo();
-			return "KitazDao catch Expected Exception:[". $pi[0] ."]". $pi[1] ."<br />". $pi[2]."<br />";
-		} catch (Exception $ex){
-			echo "KitazDaoBase(getPDOErrorInfoMessage) catch Exception:[". $ex->getCode() ."]". $ex->getMessage();
-		}
-	}
-	
-	/**
 	 * カンマ区切りの数値文字列からfloat型配列を返す
 	 * @param unknown $str
 	 * @return multitype:
@@ -178,20 +123,6 @@
 			}else {
 				$ret[] = (string)$r;
 			}
-		}
-	}
-	
-	// private
-	/**
-	 * メッセージIDから変数になっているエラー文字列を取得
-	 * @param Integer $msgId メッセージId
-	 * @return String カスタムエラーメッセージ文字列
-	 */
-	private function getMessage($msgId){
-		try {
-			return $this->{"msg".$msgId};
-		}catch (Exception $e){
-			return $msgUnknown;
 		}
 	}
 }

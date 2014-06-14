@@ -1,9 +1,7 @@
 <?php
-require_once __DIR__ . DIRECTORY_SEPARATOR . "KitazDaoBase.class.php";
-
 /**
  * KitazDao
- * @name KitazDao_GetObject
+ * @name KitazDaoException
  * @author keikitazawa
  */
 // ----------------------------------------------------------------------------
@@ -29,46 +27,44 @@ require_once __DIR__ . DIRECTORY_SEPARATOR . "KitazDaoBase.class.php";
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-class KitazDao_GetObject extends KitazDaoBase {
+class KitazDaoException extends Exception {
 	
 	/**
-	 * Dao名からDaoクラスを返す
-	 * @param String $className Daoクラス名
-	 * @return variant 取得失敗:false 取得成功：Daoクラス
+	 * エラーメッセージ集
 	 */
-	public static function getDaoClass($className){
-		try {
-			require_once KD_DAO_PATH . DIRECTORY_SEPARATOR . $className .".class.php";
-			return new $className();
-		}catch (Exception $e) {
-			return false;
+	private $msgUnknown = "CATCH TO UNDEFINED MESSAGE.";
+	// for KitazDao
+	private $msg1 = "not found config file.";
+	private $msg2 = "no define parameter in config file.";
+	private $msg3 = "can not connect database.";
+	private $msg4 = "not found Dao class.";
+	private $msg5 = "can not get Entity name in Dao.";
+	private $msg6 = "not found Entity class.";
+	private $msg7 = "not be defined method in Dao.";
+	private $msg8 = "occur PDO Exception.";
+	private $msg9 = "occur Exception in Preparing Query.";
+	
+	public function __construct($msgId, $message = null, Exception $e = null){
+		
+		$msg = $this->getCustomMessage($msgId);
+		if ($message != null){
+			$msg = $msg ." following message is :". $message;
 		}
+		
+		parent::__construct($msg, $msgId, $e);
 	}
 	
+	// private
 	/**
-	 * Daoに定義されているBEANからEntity名を取得する
-	 * @param Object $daoClass
-	 * @return variant 取得失敗:false 取得成功：String Entity名
+	 * メッセージIDから変数になっているエラー文字列を取得
+	 * @param Integer $msgId メッセージId
+	 * @return String カスタムエラーメッセージ文字列
 	 */
-	public static function getEntityNameByDao($daoClass){
+	 private function getCustomMessage($msgId){
 		try {
-			return $daoClass::BEAN;
-		} catch(Exception $e){
-			return false;
+			return $this->{"msg".$msgId};
+		}catch (Exception $e){
+			return $msgUnknown;
 		}
-	}
-	
-	/**
-	 * Entity名からEntityクラスを返す
-	 * @param String $EntityName
-	 * @return variant 取得失敗:false 取得成功：Dtoクラス
-	 */
-	public static function getEntityClass($entityName){
-		try {
-			require_once KD_ENTITY_PATH . DIRECTORY_SEPARATOR . $entityName .".class.php";
-			return new $entityName();
-		}catch (Exception $e) {
-			return false;
-		}
-	}
+	 }
 }
