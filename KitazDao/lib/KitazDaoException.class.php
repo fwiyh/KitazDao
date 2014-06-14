@@ -3,6 +3,7 @@
  * KitazDao
  * @name KitazDaoException
  * @author keikitazawa
+ * @since 0.3.0
  */
 // ----------------------------------------------------------------------------
 // The MIT License (MIT)
