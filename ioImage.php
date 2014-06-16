@@ -1,8 +1,8 @@
 <?php
 // KitazDao using variants, class files
-require_once __DIR__ .'/KitazDao/kitazDao.class.php';
-define("KD_DAO_PATH", __DIR__ ."/dao");
-define("KD_ENTITY_PATH", __DIR__ ."/entity");
+require_once __DIR__ . DIRECTORY_SEPARATOR ."KitazDao". DIRECTORY_SEPARATOR ."kitazDao.class.php";
+define("KD_DAO_PATH", __DIR__ . DIRECTORY_SEPARATOR ."dao");
+define("KD_ENTITY_PATH", __DIR__ . DIRECTORY_SEPARATOR ."entity");
 
 // ファイルアップロード用
 $file = @$_FILES['img'];
