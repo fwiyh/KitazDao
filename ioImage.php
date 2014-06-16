@@ -67,7 +67,6 @@ if (isset($file)){
 // 	$kd->deleteTable($dto);
 // 	$kd->commit();
 	
-	
 }
 
 // 削除用
