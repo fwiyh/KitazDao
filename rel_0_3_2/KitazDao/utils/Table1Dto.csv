@@ -1,0 +1,6 @@
+updatedt,STR,0
+attribute,INT,0
+tid,INT,1
+tname,STR,0
+tcomment,OCI_CLOB,0
+timage,OCI_BLOB,0
