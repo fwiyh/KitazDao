@@ -1,10 +1,7 @@
 <?php
-require_once __DIR__ . DIRECTORY_SEPARATOR ."KitazDaoCore.class.php";
-require_once __DIR__ . DIRECTORY_SEPARATOR . "KitazDaoBase.class.php";
-
 /**
  * KitazDao
- * @name KitazDao
+ * @name KitazPDO
  * @author keikitazawa
  */
 // ----------------------------------------------------------------------------
@@ -30,7 +27,7 @@ require_once __DIR__ . DIRECTORY_SEPARATOR . "KitazDaoBase.class.php";
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-class KitazDao extends KitazDaoBase {
+class KitazPDO  {
 	
 	/**
 	 * PDOオブジェクト
@@ -64,14 +61,19 @@ class KitazDao extends KitazDaoBase {
 		$this->dbType = substr($dsnArr["dsn"], 0, strpos($dsnArr["dsn"], ":"));
 	}
 	/**
-	 * Daoを取得する
-	 * @param String $className
-	 * @return KitazDao
+	 * PDOオブジェクトを返す
+	 * @return PDOクラス
 	 */
-	public function getComponent($className){
-		return new KitazDaoCore($className, $this->pdo, $this->dbType);	
+	public function getPdo(){
+		return $this->pdo;
 	}
-	
+	/**
+	 * DBタイプを返す
+	 * @return DB種別文字列
+	 */
+	public function getDbType(){
+		return $this->dbType;
+	}
 	/**
 	 * destructマジックメソッド
 	 * PDO変数にnullを代入してデータベース接続を解除する
