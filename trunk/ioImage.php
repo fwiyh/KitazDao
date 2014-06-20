@@ -22,12 +22,13 @@ if (isset($file)){
 	$imgInfo = getimagesize($path);
 // 	echo $imgInfo[0] . "/". $imgInfo[1];
 	$fileImg = file_get_contents($path);
-
-	$kd = new KitazDao("Table1Dao");
+	
+	$kd = new KitazDao();
+	$dao = $kd->getComponent("Table1Dao");
 	$dto = new Table1Dto();
 	
 	$kd->begintrans();
-	$maxArr = $kd->getMaxTid();
+	$maxArr = $dao->getMaxTid();
 	$maxTid = 0;
 	if ($maxArr[0]["mtid"] !== null){
 		$maxTid = $maxArr[0]["mtid"] +1;
@@ -37,27 +38,16 @@ if (isset($file)){
 	$dto->setAttribute(0);
 	$dto->setTcomment($alt ."\n". $imgInfo[0] ."/". $imgInfo[1]);
 	$dto->setTimage($fileImg);
-	$kd->insertTable($dto);
+	$dao->insertTable($dto);
 	$kd->commit();
-
-// 	$kd->begintrans();
-// 	$maxTid = 2;
-// 	$dto->setTid($maxTid);
-// 	$dto->setTname($fileName);
-// 	$dto->setAttribute(2);
-// 	$dto->setTcomment($alt ."\n". $imgInfo[0] ."/". $imgInfo[1]);
-// 	$dto->setTimage($fileImg);
-// 	$kd->updateTable($dto);
-// 	$kd->commit();
-
-	$maxArr = $kd->getMaxTid();
-	$retArr = $kd->seletTable($maxTid);
+	
+	$retArr = $dao->seletTable($maxTid);
 	foreach($retArr as $val){
 		echo $val["updatedt"] . "<br>";
 		echo $val["attribute"] . "<br>";
 		echo $val["tid"] . "<br>";
 		echo $val["tname"] . "<br>";
-		echo  mb_convert_encoding(stream_get_contents($val["tcomment"]), "utf8", "auto") . "<br>";
+		echo mb_convert_encoding(stream_get_contents($val["tcomment"]), "utf8", "auto") . "<br>";
 		echo $val["timage"] . "<br>";
 		echo "<br>";
 	}
