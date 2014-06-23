@@ -68,7 +68,7 @@ class KitazDao extends KitazDaoBase {
 	 * @param String $className
 	 * @return KitazDao
 	 */
-	public function getComponent($className){
+	public function getDao($className){
 		return new KitazDaoCore($className, $this->pdo, $this->dbType);	
 	}
 	
