@@ -7,7 +7,7 @@ define("KD_ENTITY_PATH", "./entity");
 // PDO宣言
 $pdo = new KitazDao();
 
-$dao = $pdo->getComponent("MSectionDao");
+$dao = $pdo->getDao("MSectionDao");
 $arr = $dao->selectWhereTest("111");
 var_dump($arr);
 
@@ -74,7 +74,7 @@ echo $arr;
 
 echo "<br>-6-<br>";
 
-$dao = $pdo->getComponent("DImageDao");
+$dao = $pdo->getDao("DImageDao");
 $arr = $dao->selectTargetImage(1);
 var_dump($arr);
 
@@ -88,7 +88,7 @@ var_dump($arr);
 
 echo "<br>-8-<br>";
 
-$dao = $pdo->getComponent("Table1Dao");
+$dao = $pdo->getDao("Table1Dao");
 $dto = new Table1Dto();
 // $dto->setAttribute(0);
 $dto->setTname("null");

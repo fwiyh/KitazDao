@@ -24,7 +24,7 @@ if (isset($file)){
 	$fileImg = file_get_contents($path);
 	
 	$kd = new KitazDao();
-	$dao = $kd->getComponent("Table1Dao");
+	$dao = $kd->getDao("Table1Dao");
 	$dto = new Table1Dto();
 	
 	$kd->begintrans();
