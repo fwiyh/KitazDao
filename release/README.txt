@@ -245,12 +245,16 @@ class MSectionDao {
 	
 	public function selectSection($secid){
 		$ret = array();
-		$ret["where"] = "WHERE SECNAME LIKE ?";
-		$ret["orderby"] = "SEC DESC";
+		$ret["where"] = "WHERE SECNAME LIKE ? ORDER BY SEC DESC";
 		$ret["columns"] = "SECID, SECNAME AS SectionName";
 		return $ret;
 	}
-
+	
+	public function getMaxId(){
+		$ret = array();
+		$ret["columns"] = "MAX(ID) AS MAXID";
+		return $ret;
+	}
 }
 
 １　INSERT文
@@ -526,7 +530,7 @@ S2Daoのような感覚で記述することを目的に作成していますが
 
 
 * 付属ユーティリティ
-[util/egen.php]
+[utils/egen.php]
 PHPのCLIを用いて、CSVファイルに記述されている情報を元にEntityを作成するプログラムです。
 コマンドラインでの実行方法は以下になります。
 
