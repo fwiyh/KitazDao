@@ -66,10 +66,15 @@ class KitazDao extends KitazDaoBase {
 	/**
 	 * Daoを取得する
 	 * @param String $className
+	 * @param dao $dao Eclipseコード補完機能対策でdaoの参照渡しを行う
 	 * @return KitazDao
 	 */
-	public function getDao($className){
-		return new KitazDaoCore($className, $this->pdo, $this->dbType);	
+	public function getDao($className, &$dao = null){
+		if (isset($dao)){
+			$dao = new KitazDaoCore($className, $this->pdo, $this->dbType);
+		}else {
+			return new KitazDaoCore($className, $this->pdo, $this->dbType);
+		}
 	}
 	
 	/**
