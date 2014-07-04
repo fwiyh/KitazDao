@@ -3,9 +3,9 @@ require_once '../KitazDao/kitazDao.class.php';
 define("KD_DAO_PATH", "./dao");
 define("KD_ENTITY_PATH", "./entity");
 
-$pdo = new KitazDao();
+$kdao = new KitazDao();
 
-$dao = $pdo->getComponent("MSectionDao");
+$dao = $kdao->getDao("MSectionDao");
 $arr = $dao->selectWhereTest(" ");
 var_dump($arr);
 
@@ -24,9 +24,9 @@ echo "<br>-03-<br>";
 $dto = new MSectionDto();
 $dto->setSecid(1);
 $dto->setGname("(　´∀｀)");
-$pdo->begintrans();
+$kdao->begintrans();
 $arr = $dao->updateSection($dto);
-$pdo->commit();
+$kdao->commit();
 
 echo "<br>-04-<br>";
 
@@ -38,49 +38,49 @@ $dto->setTel("000-0000-0000");
 $dto->setFax("000-0000-0000");
 $dto->setDir("/marumaru");
 $dto->setEmail("a@a.com");
-$pdo->begintrans();
+$kdao->begintrans();
 $arr = $dao->insertSection($dto);
-$pdo->commit();
+$kdao->commit();
 
 echo "<br>-05-<br>";
 
 $dto = new MSectionDto();
 $dto->setSecid(4);
-$pdo->begintrans();
+$kdao->begintrans();
 $arr = $dao->deleteSection($dto);
-$pdo->commit();
+$kdao->commit();
 
 echo "<br>-06-<br>";
 
 $dto = new MSectionDto();
 $dto->setSecid(1);
 $dto->setGname("G");
-$pdo->begintrans();
+$kdao->begintrans();
 $arr = $dao->updateSection($dto);
-$pdo->commit();
+$kdao->commit();
 
 echo "<br>-07-<br>";
 
 $dto = new MSectionDto();
 $dto->setSecid(100);
 $dto->setGname("G2");
-$pdo->begintrans();
+$kdao->begintrans();
 $arr = $dao->modifyPkSection($dto ,0);
-$pdo->commit();
+$kdao->commit();
 
 echo "<br>-08-<br>";
 
 $dto = new MSectionDto();
 $dto->setSecid(0);
 $dto->setGname("G");
-$pdo->begintrans();
+$kdao->begintrans();
 $arr = $dao->modifyPkSection($dto ,100);
-$pdo->commit();
+$kdao->commit();
 echo $arr;
 
 echo "<br>-09-<br>";
 
-$dao = $pdo->getComponent("DImageDao");
+$dao = $kdao->getDao("DImageDao");
 $arr = $dao->selectTargetImage(1);
 var_dump($arr);
 
@@ -94,7 +94,7 @@ var_dump($arr);
 
 echo "<br>-11-<br>";
 
-$dao = $pdo->getComponent("Table1Dao");
+$dao = $kdao->getDao("Table1Dao");
 $dto = new Table1Dto();
 // $dto->setAttribute(0);
 
