@@ -72,6 +72,8 @@ $dto->setGname("G");
 $arr = $dao->modifyPkSection($dto ,100);
 echo $arr;
 
+$pdo->commit();
+
 echo "<br>-6-<br>";
 
 $dao = $pdo->getDao("DImageDao");
@@ -95,6 +97,7 @@ $dto->setTname("null");
 $arr = $dao->selectSQLFile($dto);
 var_dump($arr);
 
-$pdo->commit();
+
+
 
 unset($pdo);
