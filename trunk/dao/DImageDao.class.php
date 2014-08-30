@@ -7,11 +7,13 @@ class DImageDao {
 	const BEAN = "DImageDto";
 
 	public function selectTargetImage($iid){
-		return;
+		$ret = array();
+		return $ret;
 	}
 	
 	public function selectBySectionArray($secid, $attr){
-		return;
+		$ret = array();
+		return $ret;
 	}
 
 }
