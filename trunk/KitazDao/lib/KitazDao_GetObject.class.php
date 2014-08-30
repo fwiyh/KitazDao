@@ -60,7 +60,7 @@ class KitazDao_GetObject extends KitazDaoBase {
 	
 	/**
 	 * Entity名からEntityクラスを返す
-	 * @param String $EntityName
+	 * @param String $entityName
 	 * @return variant 取得失敗:false 取得成功：Dtoクラス
 	 */
 	public static function getEntityClass($entityName){
