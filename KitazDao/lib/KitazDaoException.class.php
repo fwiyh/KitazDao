@@ -65,7 +65,7 @@ class KitazDaoException extends Exception {
 		try {
 			return $this->{"msg".$msgId};
 		}catch (Exception $e){
-			return $msgUnknown;
+			return $this->msgUnknown;
 		}
 	 }
 }
