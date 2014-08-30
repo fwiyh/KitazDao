@@ -72,13 +72,17 @@ $dto->setGname("G");
 $arr = $dao->modifyPkSection($dto ,100);
 echo $arr;
 
-$pdo->commit();
+//$pdo->commit();
 
 echo "<br>-6-<br>";
+
+//$pdo->begintrans();
 
 $dao = $pdo->getDao("DImageDao");
 $arr = $dao->selectTargetImage(1);
 var_dump($arr);
+
+$pdo->commit();
 
 echo "<br>-7-<br>";
 
