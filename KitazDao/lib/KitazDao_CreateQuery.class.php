@@ -74,8 +74,21 @@ class KitazDao_CreateQuery extends KitazDaoBase {
 	 * @var array
 	 */
 	protected $typeParam;
-	
-	/**
+    /**
+     * null扱いパラメータ
+     * @var string
+     * @since 0.5.0
+     */
+    protected $nullParam;
+    /**
+     * 条件式で扱わないパラメータ
+     * @var string
+     * @since 0.5.0
+     */
+    protected $noparam;
+
+
+    /**
 	 * SQL文のカラム部分
 	 * @var array
 	 */
@@ -124,6 +137,8 @@ class KitazDao_CreateQuery extends KitazDaoBase {
 		$this->orderbyParam = "";
 		$this->columnsParam = "";
 		$this->typeParam = array();
+        $this->nullParam = "";
+        $this->noparam = "";
 		
 		$this->sqlColumnArray = array();
 		$this->sqlConditionArray = array();
@@ -204,7 +219,13 @@ class KitazDao_CreateQuery extends KitazDaoBase {
 		if (isset($daoParam["type"])){
 			$this->typeParam = $daoParam["type"];
 		}
-	}
+        if (isset($daoParam["null"])){
+            $this->nullParam = $daoParam["null"];
+        }
+        if (isset($daoParam["noparam"])){
+            $this->noparam = $daoParam["noparam"];
+        }
+ 	}
 	/**
 	 * SQLファイルが有ればここからSQL文を取得する
 	 * @param String $methodName 呼び出されたメソッドのメソッド名
