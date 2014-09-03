@@ -410,7 +410,7 @@ class KitazDao_CreateQuery extends KitazDaoBase {
 				}
 				if (isset($val) || $issetnull){
 					// pkey指定かつパラメータがEntityのみの場合に条件式とする
-					if (strpos($column, $pkeyColumn) !== false && $paramNum == 1){
+					if (stripos($column, $pkeyColumn) !== false && $paramNum == 1){
 						$this->setConditionEqualStatement($val, $column);
 					} else {
 						$this->setUpdateSetStatement($val, $column, $arguments[0]);
@@ -423,7 +423,7 @@ class KitazDao_CreateQuery extends KitazDaoBase {
 			// メソッドパラメータから条件式を作成する
 			$ref = new ReflectionMethod(get_class($this->dao), $methodName);
 			$params = $ref->getParameters();
-			for ($i = 1,$max = count($params); $i < $max; $i++){
+			for ($i = 1, $max = count($params); $i < $max; $i++){
 				// @since 0.5.0 
 				$column = strtoupper($params[$i]->getName());
 				// @since 0.5.0 noparam
@@ -431,13 +431,13 @@ class KitazDao_CreateQuery extends KitazDaoBase {
 					continue;
 				}
 				$val = $arguments[$i];
-				if (isset($value)){
+				if (isset($val)){
 					// クエリパラメータがある場合はプレースホルダー処理を行う
 					if (strlen($this->whereParam) > 0){
 						$this->setConditionBindValStatement($val, $column);
 					}else {
 						// 配列の場合はINで複数条件を割り当てる
-						if (is_array($value)){
+						if (is_array($val)){
 							$this->setConditionInStatement($val, $column, "C_");
 						}else {
 							$this->setConditionEqualStatement($val, $column, "C_");
