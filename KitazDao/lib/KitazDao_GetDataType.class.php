@@ -93,8 +93,12 @@ class KitazDao_GetDataType extends KitazDaoBase {
 	public static function getPDODataType($className, $column, $value, $sqltypeParam){
 		/**
 		 * 優先順位
-		 * typeメソッドパラメータ→Entity→値判断
+		 * @since 0.5.0 最優先は$value=null;
+		 * null→typeメソッドパラメータ→Entity→値判断
 		 */
+		if (!isset($value)){
+			return KitazDao::KD_PARAM_NULL;
+		}
 		$evalColumn = strtoupper($column);
 		// typeメソッドパラメータを優先的に取得する
 		foreach ($sqltypeParam as $key => $v){
