@@ -144,10 +144,10 @@ class KitazDaoCore extends KitazDaoBase {
 		if ($queryType == parent::KD_STMT_SELECT){
 			// PDOのINT/BOOL/NULL指定を行う
 			$outputSelectQuery = new KitazDao_OutputSelectQuery();
-			return $outputSelectQuery->getArray($stmt, $this->loadEntity);
-		}else {
-			return $ret;
+			$ret = $outputSelectQuery->getArray($stmt, $this->loadEntity);
 		}
+		$stmt = null;
+		return $ret;
 	}
 }
 ?>
