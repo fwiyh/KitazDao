@@ -74,8 +74,21 @@ class KitazDao_CreateQuery extends KitazDaoBase {
 	 * @var array
 	 */
 	protected $typeParam;
-	
-	/**
+    /**
+     * null扱いパラメータ
+     * @var string
+     * @since 0.5.0
+     */
+    protected $nullParam;
+    /**
+     * 条件式で扱わないパラメータ
+     * @var string
+     * @since 0.5.0
+     */
+    protected $noparam;
+
+
+    /**
 	 * SQL文のカラム部分
 	 * @var array
 	 */
@@ -124,6 +137,8 @@ class KitazDao_CreateQuery extends KitazDaoBase {
 		$this->orderbyParam = "";
 		$this->columnsParam = "";
 		$this->typeParam = array();
+        $this->nullParam = "";
+        $this->noparam = "";
 		
 		$this->sqlColumnArray = array();
 		$this->sqlConditionArray = array();
@@ -204,7 +219,13 @@ class KitazDao_CreateQuery extends KitazDaoBase {
 		if (isset($daoParam["type"])){
 			$this->typeParam = $daoParam["type"];
 		}
-	}
+        if (isset($daoParam["null"])){
+            $this->nullParam = $daoParam["null"];
+        }
+        if (isset($daoParam["noparam"])){
+            $this->noparam = $daoParam["noparam"];
+        }
+ 	}
 	/**
 	 * SQLファイルが有ればここからSQL文を取得する
 	 * @param String $methodName 呼び出されたメソッドのメソッド名
@@ -247,14 +268,22 @@ class KitazDao_CreateQuery extends KitazDaoBase {
 		// メソッドパラメータから条件式を作成する
 		$ref = new ReflectionMethod(get_class($this->dao), $methodName);
 		$params = $ref->getParameters();
-		for ($i = 0,$max = count($params); $i < $max; $i++){
-			$paramName = $params[$i]->getName();
+		for ($i = 0, $max = count($params); $i < $max; $i++){
+			// @mod 0.5.0
+			$column = $params[$i]->getName();
 			$value = $arguments[$i];
+			// @since 0.5.0 noparam
+			if (stripos($this->noparam, $column) !== false){
+				continue;
+			}
+			// @since 0.5.0 nullParam
+			if (stripos($this->nullParam, $column) !== false){
+				$value = null;
+			}
 			// クエリパラメータがある場合はプレースホルダー処理を行う
 			if (strlen($this->whereParam) > 0){
-				$this->setConditionBindValStatement($value, $paramName);
+				$this->setConditionBindValStatement($value, $column);
 			}else {
-				$column = strtoupper($paramName);
 				// 配列の場合はINで複数条件を割り当てる
 				if (is_array($value)){
 					$this->setConditionInStatement($value, $column);
@@ -309,10 +338,20 @@ class KitazDao_CreateQuery extends KitazDaoBase {
 			// getメソッドからパラメータ取得を行う
 			if (substr($m, 0, 3) == "get"){
 				$column = strtoupper(substr($m, 3));
+				// @since 0.5.0 noparam
+				if (stripos($this->noparam, $column) !== false){
+					continue;
+				}
 				// getterから値を取得する
 				$val = call_user_func_array(array($arguments[0], $m), array());
+				// @since 0.5.0 nullParam
+				$issetnull = false;
+				if (stripos($this->nullParam, $column) !== false){
+					$issetnull = true;
+					$val = null;
+				}
 				// 変数がセットされている時にSQL文を作成する
-				if (isset($val)){
+				if (isset($val) || $issetnull){
 					$this->sqlColumnArray[] = $column;
 					$this->sqlPHArray[] = ":". $column;
 					$this->bindValues[] = $val;
@@ -357,11 +396,21 @@ class KitazDao_CreateQuery extends KitazDaoBase {
 			// getメソッドからパラメータ取得を行う
 			if (substr($m, 0, 3) == "get"){
 				$column = strtoupper(substr($m, 3));
+				// @since 0.5.0 noparam
+				if (stripos($this->noparam, $column) !== false){
+					continue;
+				}
 				// getterから値を取得する
 				$val = call_user_func_array(array($arguments[0], $m), array());
-				if (isset($val)){
+				// @since 0.5.0 nullParam
+				$issetnull = false;
+				if (stripos($this->nullParam, $column) !== false){
+					$issetnull = true;
+					$val = null;
+				}
+				if (isset($val) || $issetnull){
 					// pkey指定かつパラメータがEntityのみの場合に条件式とする
-					if (strpos($column, $pkeyColumn) !== false && $paramNum == 1){
+					if (stripos($column, $pkeyColumn) !== false && $paramNum == 1){
 						$this->setConditionEqualStatement($val, $column);
 					} else {
 						$this->setUpdateSetStatement($val, $column, $arguments[0]);
@@ -374,20 +423,24 @@ class KitazDao_CreateQuery extends KitazDaoBase {
 			// メソッドパラメータから条件式を作成する
 			$ref = new ReflectionMethod(get_class($this->dao), $methodName);
 			$params = $ref->getParameters();
-			for ($i = 1,$max = count($params); $i < $max; $i++){
-				$paramName = $params[$i]->getName();
-				$value = $arguments[$i];
-				if (isset($value)){
+			for ($i = 1, $max = count($params); $i < $max; $i++){
+				// @since 0.5.0 
+				$column = strtoupper($params[$i]->getName());
+				// @since 0.5.0 noparam
+				if (stripos($this->noparam, $column) !== false){
+					continue;
+				}
+				$val = $arguments[$i];
+				if (isset($val)){
 					// クエリパラメータがある場合はプレースホルダー処理を行う
 					if (strlen($this->whereParam) > 0){
-						$this->setConditionBindValStatement($value, $paramName);
+						$this->setConditionBindValStatement($val, $column);
 					}else {
-						$column = strtoupper($paramName);
 						// 配列の場合はINで複数条件を割り当てる
-						if (is_array($value)){
-							$this->setConditionInStatement($value, $column, "C_");
+						if (is_array($val)){
+							$this->setConditionInStatement($val, $column, "C_");
 						}else {
-							$this->setConditionEqualStatement($value, $column, "C_");
+							$this->setConditionEqualStatement($val, $column, "C_");
 						}
 					}
 				}
@@ -431,9 +484,20 @@ class KitazDao_CreateQuery extends KitazDaoBase {
 			// getメソッドからパラメータ取得を行う
 			if (substr($m, 0, 3) == "get"){
 				$column = strtoupper(substr($m, 3));
+				// @since 0.5.0 noparam
+				if (stripos($this->noparam, $column) !== false){
+					continue;
+				}
 				// getterから値を取得する
 				$val = call_user_func_array(array($arguments[0], $m), array());
-				if (isset($val)){
+				// @since 0.5.0 nullParam
+				$issetnull = false;
+				if (stripos($this->nullParam, $column) !== false){
+					$issetnull = true;
+					$val = null;
+				}
+				// @since 0.5.0 nullParam
+				if (isset($val) || $issetnull){
 					$this->setConditionEqualStatement($val, $column);
 				}
 			}

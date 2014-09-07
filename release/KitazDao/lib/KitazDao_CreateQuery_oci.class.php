@@ -89,7 +89,7 @@ class KitazDao_CreateQuery_oci extends KitazDao_CreateQuery {
 				$isLob = true;
 				$lobColumns[] = str_replace(":", "", $this->sqlPHArray[$i]);
 				$lobPH[] = $this->sqlPHArray[$i];
-				for ($j=0,$smax=count($this->sqlSetArray); $j < $smax; $j++){
+				for ($j=0, $smax=count($this->sqlSetArray); $j < $smax; $j++){
 					$this->sqlSetArray[$j] = str_replace($this->sqlPHArray[$i], "EMPTY_BLOB()", $this->sqlSetArray[$j]);
 				}
 			}
