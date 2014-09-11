@@ -410,7 +410,7 @@ class KitazDao_CreateQuery extends KitazDaoBase {
 				}
 				if (isset($val) || $issetnull){
 					// pkey指定かつパラメータがEntityのみの場合に条件式とする
-					if (stripos($column, $pkeyColumn) !== false && $paramNum == 1){
+					if (stripos($pkeyColumn, $column) !== false && $paramNum == 1){
 						$this->setConditionEqualStatement($val, $column);
 					} else {
 						$this->setUpdateSetStatement($val, $column, $arguments[0]);
