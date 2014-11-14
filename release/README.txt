@@ -358,19 +358,55 @@ $ret["type"] = $type;
 Select文を実行するメソッドの引数はEntityにないものを記述できますが、
 これらの引数のデータ型を明示するときに用います。
 
-function getSectionBetween($min, $max){
+public function getSectionBetween($min, $max){
 	$ret = array();
 	$ret["where"] = "SORDER BETWEEN ? AND ? ORDER BY SORDER ASC";
 	$type = array();
 	$type["MIN"] = KitazDao::KD_TYPE_INT;
 	$type["MAX"] = KitazDao::KD_TYPE_INT;
 	$ret["type"] = $type;
+	return $ret;
 }
 
 この例では、whereメソッドパラメータでバインド定数を指定していますが、
 $min,$maxのデータ型をINTとして明示するために利用しています。
 また、パラメータにNULLを入れたい場合にKitazDao::KD_TYPE_NULLをtypeメソッドパラメータで指定できます。
 
+６　noparamメソッドパラメータ
+SELECT文のメソッドは変数名で検索対象となる項目名が指定されますが、noparamメソッドパラメータに指定されている変数名は
+SELECT文の対象外になります。
+
+public function selectPeriod($id, $topnum){
+	$ret = array();
+	$ret["sql"] = "SELECT TOP $topnum * FROM PERIOD_TABLE WHERE pid=/*id*/'1'";
+	$ret["noparam"] = "topnum";
+	return $ret;
+}
+この例では、普通にSQLファイルに/**/によるプレースホルダーを入れるとPDOで正しく処理されません。
+topnumをSQL文に代入させたい場合は、noparamを指定することでプレースホルダーの対象外にできます。
+
+public function getTargetData($order, $date){
+	$ret = array();
+	if ($order == 1){
+		$ret["order"] = "ID ASC";
+	}else {
+		$ret["order"] = "ID DESC";
+	}
+	$ret["noparam"] = "order,date";
+	return $ret;
+} 
+このようにメソッド内で分岐をつくることもできます。
+複数の変数を指定する場合はカンマで区切ります。
+
+ただし、純粋に値を渡すためSQLインジェクションの危険性があることを留意すべきです。
+SQL文に直接代入する場合は特に注意が必要です。
+
+７　nullParamメソッドパラメータ
+SQLファイル、SQLメソッドパラメータ以外で「WHERE DATE IS NULL」のように明示的にnullを指定したい場合に用います。
+このメソッドパラメータで指定するものは変数名です。
+テーブルに「DATE」というカラムが存在するときに、Daoに$dateを指定します。
+後にメソッドパラメータでnullparamでdateを記述することで「DATE IS NULL」を実現できます。
+複数の変数を指定する場合はカンマで区切ります。
 
 
 [SQLファイル]
