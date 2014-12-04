@@ -44,7 +44,7 @@ Dao・Dtoのクラスが宣言されるときに、常にこのパスからDao�
 | PHPプログラム |---| Dao |---| Entity |-----| PDO |--| 各種RDBMS |
 |---------------|   |-----|   |--------|     |-----|  |-----------|
                        |
-                |-------------|   
+                |-------------|
                 | SQLファイル |
                 |-------------|
 
@@ -60,9 +60,9 @@ S2Daoと異なり、データベースの特性をEntityに記述することで
 
 
 class MSectionDto {
-	
+
 	const TABLE = "M_SECTION";
-	
+
 	private $updt;
 	private $secid;
 	private $gname;
@@ -71,7 +71,7 @@ class MSectionDto {
 	private $fax;
 	private $email;
 	private $dir;
-	
+
 	const UPDT_TYPE = KitazDao::KD_PARAM_STR;
 	const SECID_TYPE = KitazDao::KD_PARAM_INT;
 	const GNAME_TYPE = KitazDao::KD_PARAM_STR;
@@ -80,9 +80,9 @@ class MSectionDto {
 	const FAX_TYPE = KitazDao::KD_PARAM_STR;
 	const EMAIL_TYPE = KitazDao::KD_PARAM_STR;
 	const DIR_TYPE = KitazDao::KD_PARAM_STR;
-	
+
 	const PRIMARY_KEY = "SECID";
-	
+
 	/**
 	* $updt(Updt)のgetter/setter
 	**/
@@ -92,7 +92,7 @@ class MSectionDto {
 	public function setUpdt($updt) {
 		$this->updt = $updt;
 	}
-	
+
 	/**
 	* $secid(Secid)のgetter/setter
 	**/
@@ -102,7 +102,7 @@ class MSectionDto {
 	public function setSecid($secid) {
 		$this->secid = $secid;
 	}
-	
+
 	/**
 	* $gname(Gname)のgetter/setter
 	**/
@@ -112,7 +112,7 @@ class MSectionDto {
 	public function setGname($gname) {
 		$this->gname = $gname;
 	}
-	
+
 	/**
 	* $sname(Sname)のgetter/setter
 	**/
@@ -122,7 +122,7 @@ class MSectionDto {
 	public function setSname($sname) {
 		$this->sname = $sname;
 	}
-	
+
 	/**
 	* $tel(Tel)のgetter/setter
 	**/
@@ -132,7 +132,7 @@ class MSectionDto {
 	public function setTel($tel) {
 		$this->tel = $tel;
 	}
-	
+
 	/**
 	* $fax(Fax)のgetter/setter
 	**/
@@ -142,7 +142,7 @@ class MSectionDto {
 	public function setFax($fax) {
 		$this->fax = $fax;
 	}
-	
+
 	/**
 	* $email(Email)のgetter/setter
 	**/
@@ -152,7 +152,7 @@ class MSectionDto {
 	public function setEmail($email) {
 		$this->email = $email;
 	}
-	
+
 	/**
 	* $dir(Dir)のgetter/setter
 	**/
@@ -162,7 +162,7 @@ class MSectionDto {
 	public function setDir($dir) {
 		$this->dir = $dir;
 	}
-	
+
 }
 
 １　CONST TABLE
@@ -220,9 +220,9 @@ S2Dao.php5ではInterfaceですが、KitazDaoでは普通のクラスになっ�
 そのためメソッドの予測機能がメソッド名を列挙してくれません。
 
 class MSectionDao {
-	
+
 	const BEAN = "MSectionDto";
-	
+
 	public function insertSection($dto){
 		$ret = array();
 		return $ret;
@@ -232,24 +232,24 @@ class MSectionDao {
 		$ret = array();
 		return $ret;
 	}
-	
+
 	public function updateSection($dto){
 		$ret = array();
 		return $ret;
 	}
-	
+
 	public function modifyPkSection($dto, $secid){
 		$ret = array();
 		return $ret;
 	}
-	
+
 	public function selectSection($secid){
 		$ret = array();
 		$ret["where"] = "WHERE SECNAME LIKE ? ORDER BY SEC DESC";
 		$ret["columns"] = "SECID, SECNAME AS SectionName";
 		return $ret;
 	}
-	
+
 	public function getMaxId(){
 		$ret = array();
 		$ret["columns"] = "MAX(ID) AS MAXID";
@@ -394,7 +394,7 @@ public function getTargetData($order, $date){
 	}
 	$ret["noparam"] = "order,date";
 	return $ret;
-} 
+}
 このようにメソッド内で分岐をつくることもできます。
 複数の変数を指定する場合はカンマで区切ります。
 
@@ -465,6 +465,7 @@ IF文の処理はevalで処理し、引数はバックスラッシュで処理�
 したがって「==」と「===」とでは挙動が変わることに注意が必要です。
 コメントパラメータはPDOのプレースホルダーに置き変えますが、
 IF分岐文ではバックスラッシュのエンコードで評価式を処理します。
+IF文は3文字以上にする必要があります。
 
 「ELSE」分岐も記述可能です。
 IF分岐処理とENDの間に「/*ELSE*/」を記述でき、
