@@ -31,7 +31,7 @@ require_once __DIR__ . DIRECTORY_SEPARATOR . "KitazDao_GetDataType.class.php";
 // THE SOFTWARE.
 
 class KitazDao_AnalyzeSQLFile extends KitazDaoBase {
-	
+
 	/**
 	 * 評価式判別に用いるパラメータ名・値・データ型を保存する領域
 	 * @var array
@@ -42,8 +42,8 @@ class KitazDao_AnalyzeSQLFile extends KitazDaoBase {
 	 * @var array
 	 */
 	private $sqlTypeParam = array();
-	
-	
+
+
 	/**
 	 * SQLメソッドパラメータ・SQLファイルの解釈を行う
 	 * @param array $params メソッドのパラメータ名配列
@@ -59,7 +59,7 @@ class KitazDao_AnalyzeSQLFile extends KitazDaoBase {
 		$bindValues = array();
 		$pdoDataType = array();
 		$this->sqlTypeParam = $typeParam;
-		
+
 		// 評価外コメントを除去する
 		$sql = $this->removeNoEvaluationComment($sql);
 		// 渡された変数すべてをプレースホルダーに置き換える
@@ -67,7 +67,7 @@ class KitazDao_AnalyzeSQLFile extends KitazDaoBase {
 		// 分岐処理の処理を行う
 		$sql = $this->evaluationSQLFile($params, $arguments, $sql, $sqlPHArray, $bindValues, $pdoDataType);
 	}
-	
+
 	/**
 	 * 評価外コメントを除去する
 	 * @param String $sql ファイルのSQL文
@@ -106,7 +106,7 @@ class KitazDao_AnalyzeSQLFile extends KitazDaoBase {
 		}
 		return $sql;
 	}
-	
+
 	// クラス名がある（entity）の場合はセットされた項目すべてをバインドする
 	// 置換対象コメント：「$entity.[$methodName]"*"」 or 「$entity.[$methodName]'*'」 or 「$entity.[$methodName]*」
 	// プレースホルダー：「:$entity_[$methodName]"」 or 「:$entity_[$methodName]_IN_X」
@@ -238,7 +238,7 @@ class KitazDao_AnalyzeSQLFile extends KitazDaoBase {
 		// 置換結果を返す
 		$sql = $str;
 	}
-	
+
 	/**
 	 * IFコメントで利用する配列に変数の値をセットする
 	 * @param String $paramName
@@ -248,7 +248,7 @@ class KitazDao_AnalyzeSQLFile extends KitazDaoBase {
 	private function setParamsArray($paramName, $value, $dataType){
 		$this->paramArray[] = array("p"=>$paramName, "v"=>$value, "t"=>$dataType);
 	}
-	
+
 	/**
 	 * １文字ずつSQL文字列を解釈する
 	 * @param array $params 変数名の配列
@@ -276,7 +276,7 @@ class KitazDao_AnalyzeSQLFile extends KitazDaoBase {
 		// BEGIN句処理のフラグ
 		$isExistElse = false;
 		$isTrueComment = false;
-		
+
 		for ($i = 0; $i < $max; $i++){
 			// IF文開始
 			if ($isUse[$nest] && !$isEval && preg_match("/\/\*IF\s/i", $sql[$i].$sql[$i+1].$sql[$i+2].$sql[$i+3].$sql[$i+4])){
@@ -325,7 +325,7 @@ class KitazDao_AnalyzeSQLFile extends KitazDaoBase {
 	private function evaluateFormula($evalStr){
 		$ret = false;
 		// 全パターンの演算子以外を取り出す
-		$pattern = "/[^\"\'\s]{1,}[^(IF\s|=|\!|\+|\-|\*|\/|NULL\s|\||\&|AND\s|OR\s|XOR\s|\~|\^)]{1,}[^\"\'\s]{1,}/i";
+		$pattern = "/[^\"\'\s]{0,1}[\S]{1,}[^\"\'\s]{0,1}[(IF\s|=|\!|\+|\-|\*|\/|NULL\s|\||\&|AND\s|OR\s|XOR\s|\~|\^|\<|\>)]{1,}[^\"\'\s]{0,}[\S]{1,}[^\"\'\s]{0,}/i";
 		if (preg_match_all($pattern, $evalStr, $matches)){
 			foreach ($matches[0] as $v){
 				// パラメータと一致したら置き換える
