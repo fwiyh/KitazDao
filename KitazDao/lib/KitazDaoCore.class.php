@@ -132,7 +132,7 @@ class KitazDaoCore extends KitazDaoBase {
 			// no output warning for INSERT/UPDATE from OCI-CLOB
 			$ret = @$stmt->execute();
 		} catch (PDOException $e){
-			throw new KitazDaoException(8);
+			throw new KitazDaoException(8, null, $e);
 		} catch (Exception $e){
 			throw new KitazDaoException(8, null, $e);
 		}
