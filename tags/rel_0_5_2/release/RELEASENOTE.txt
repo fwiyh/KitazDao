@@ -1,0 +1,94 @@
+0.5.1
+* バグフィックス
+SQLファイルで変数名4文字以上でなければ値に置換されない問題に修正。
+ただし、IF文は3文字以上でなければ正常に判定されない。すべてfalse扱いとなる。
+
+0.5.0
+* 機能追加
+・メソッドにパラメータとして扱わない「noparam」メソッドパラメータを追加しました。
+noparamに設定されているパラメータはDaoメソッド内で用いるものとなり、SQL文には反映されません。
+・SQLファイル、SQLメソッドパラメータ以外でnullを明示的に指定できる「nullParam」メソッドパラメータを追加しました。
+nullParamに設定されているパラメータは条件式や設定値に明示的にnullになります。
+
+0.4.0
+* 仕様変更
+・Daoの作成方法が変わります。
+0.3.1以前とコード互換がありません。
+Daoオブジェクト作成処理を置き換る必要となります。
+
+（0.3.1以前）
+$dao = new KitazDao("Table1Dao", "customConfig.config");
+
+（0.4.0以降）
+$kdao = new KitazDao("customConfig.config");
+$dao = $kdao->getDao("Table1Dao");
+
+「new KitazDao()」により、共有できるPDOオブジェクトを作成します。
+PDOオブジェクトのクラスにgetDaoメソッドを実行し、
+過去のKitazDaoのようにクラス名を指定します。
+KitazDaoオブジェクト作成時に任意の設定ファイルを記述すると、
+その設定ファイルを用いることになりますが、
+省略すると従来通り「KitazDao/KitazDao.config」を参照します。
+
+このバージョンより、トランザクション処理をKitazDaoクラスに移動しており、
+getDaoにはトランザクションのメソッドが存在しなくなりました。
+
+* 機能追加
+・コードアシスト機能を利用してコーディングしやすくすることも可能になります。
+getDaoメソッドに第２パラメータを渡すことで参照渡しによりKitazDaoのDaoを渡します。
+
+$kdao = new KitazDao();
+$dao = new Table1Dao();
+$kdao->getDao("Table1Dao", $dao);
+
+事前に$dao変数に作成したDaoクラスを宣言することにより、
+開発環境上でのコードアシスト機能で、作成したメソッドが候補に出てきます。
+getDaoメソッドにより$dao変数がKitazDaoが作成するクラスに置き換わりますが、
+コードアシスト機能を維持させたままにできます（Eclipse4.2にて検証）。
+
+・名称変更
+ユーティリティの呼称を変更します。
+変更前：util/egen.php→変更後：utils/egen.php
+
+* 既知の問題(Oracle11g)
+SELECT文でCLOBやBLOBを開いた状態でcommit()するとfatal errorを吐く。
+
+
+0.3.1
+* ユーティリティの追加
+util/egen.phpの追加。決められたフォーマットで記述されたCSVからEntityを作成できます。
+
+* 不具合対応
+・READMEの修正を行いました。
+
+
+0.3.0
+* 検証済みDBの追加
+Windows上で動くMSAccessを同じ環境にあるIISからODBC経由でアクセスできました。
+ただし渡す文字列、SQLファイルをすべてSJIS(SJIS-WIN)にする必要があります。
+
+* 機能修正
+・異常発生時にExceptionを投げるようにしました。
+
+* 不具合対応
+・設定ファイルのPDOドライバオプションが反映されるようになりました。
+連想配列を記述するように、１連想配列をカンマ区切りにして「=>」で配列を作成できます。
+例）option="PDO::ATTR_ORACLE_NULLS => PDO::NULL_NATURAL, PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION"
+・READMEの修正をしました。
+
+
+0.2.0　
+* 機能追加
+・インスタンス作成時に別の設定ファイルを指定するオプション
+KitazDaoディレクトリ直下（libの１つ上の階層）からファイルを取得しにいきます。
+例）$dao = new KitazDao("MSectionDao", "KitazDao2.config");
+
+* 不具合対応
+SQLファイルを実行する際にパラメータがentityでも配列でもない普通の変数の場合にデータ型を取得できない問題
+
+* 既知の問題
+・例外を用意していないため結果がfalseか常にチェックする必要がある。
+・設定ファイルのPDO接続のオプション配列が反映されない。
+
+0.1.0
+初期公開
