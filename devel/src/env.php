@@ -1,7 +1,5 @@
 <?php
 require_once "../../KitazDao/kitazDao.class.php";
-define("KD_DAO_PATH", "../dao");
-define("KD_ENTITY_PATH", "../dto");
 
 define("MYSQL_CONFIG", "KitazDao.mysql.config");
 define("SQLSRV_CONFIG", "KitazDao.sqlsrv.config");
