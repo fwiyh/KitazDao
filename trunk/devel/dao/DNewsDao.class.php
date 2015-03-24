@@ -1,5 +1,5 @@
 <?php
-class DNwesDao{
+class DNewsDao{
 	
 	const BEAN = "DNewsDto";
 	
