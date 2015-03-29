@@ -4,7 +4,7 @@ class DNewsDao{
 	const BEAN = "DNewsDto";
 	
 	/**
-	 * 「where」「orderby」「columns」「sql」「type」「noparam」
+	 * -where -orderby -columns sql type -noparam
 	 */
 	
 	/**
@@ -60,7 +60,7 @@ class DNewsDao{
 			$orderbyString .= ", ISMORNING DESC";
 		}
 		$ret["orderby"] = $orderbyString;
-		$ret["noparam"] = "$isasc, $isfirstmorning";
+		$ret["noparam"] = "isasc, isfirstmorning";
 		return $ret;
 	}
 	
