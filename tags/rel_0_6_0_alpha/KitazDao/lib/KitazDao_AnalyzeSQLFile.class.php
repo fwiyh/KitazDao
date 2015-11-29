@@ -136,7 +136,8 @@ class KitazDao_AnalyzeSQLFile extends KitazDaoBase {
 	 */
 	private function setPlaceHolderForVariant($paramName, $value, &$sql, &$sqlPHArray, &$bindValues, &$pdoDataType, $entity = null, $propName = null){
 		// エンティティの場合はコロンを「_E_」に置き換えてプレースホルダーを作成する
-		$pattern1 = "/(\/\*)". $paramName ."(\*\/)([\"]\S{0,}[\"]|[\']\S{0,}[\']|([0-9a-zA-Z\.\_\-]){1,})/i";
+		// @since 0.6.0 クォートがない場合はboolean,null,数値とみなす
+		$pattern1 = "/(\/\*)". $paramName ."(\*\/)([\"](\S|\s){0,}[\"]|[\'](\S|\s){0,}[\']|([0-9a-zA-Z\.\-]){1,})/i";
 		// プレースホルダーになる部分を配列に分解して結合し直す
 		$sqlArr = preg_split($pattern1, $sql);
 		$str = "";
@@ -178,7 +179,7 @@ class KitazDao_AnalyzeSQLFile extends KitazDaoBase {
 	 */
 	private function setPlaceHolderForArray($paramName, $values, &$sql, &$sqlPHArray, &$bindValues, &$pdoDataType, $entity = null, $propName = null){
 		// エンティティの場合はコロンを「_E_」に置き換えてプレースホルダーを作成する
-		$pattern1 = "/(\/\*)". $paramName ."(\*\/)(\(){1}([0-9a-zA-Z,\.\-\"\'\_]{1,})(\)){1}/i";
+		$pattern1 = "/(\/\*)". $paramName ."(\*\/)(\(){1}([0-9a-zA-Z,\.\-\"\'\_\s]{1,})(\)){1}/i";
 		// プレースホルダーになる部分を配列に分解して結合し直す
 		$sqlArr = preg_split($pattern1, $sql);
 		$str = "";
@@ -303,7 +304,8 @@ class KitazDao_AnalyzeSQLFile extends KitazDaoBase {
 		$ret = false;
 		// 全パターンの演算子以外を取り出す
 //		$pattern = "/[^\"\'\s]{0,1}[\S]{1,}[^\"\'\s]{0,1}[(IF\s|=|\!|\+|\-|\*|\/|NULL\s|\||\&|AND\s|OR\s|XOR\s|\~|\^|\<|\>)]{1,}[^\"\'\s]{0,}[\S]{1,}[^\"\'\s]{0,}/i";
-		$pattern = "/[^\"\'\s]{1,}[^(IF\s|=|\!|\+|\-|\*|\/|NULL\s|\||\&|AND\s|OR\s|XOR\s|\~|\^)]{1,}[^\"\'\s]{1,}/i";
+//		$pattern = "/[^\"\'\s]{1,}[^(IF\s|=|\!|\+|\-|\*|\/|NULL\s|\||\&|AND\s|OR\s|XOR\s|\~|\^)]{1,}[^\"\'\s]{1,}/i";
+		$pattern = "/[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*/i";
 		if (preg_match_all($pattern, $evalStr, $matches)){
 			foreach ($matches[0] as $v){
 				// パラメータと一致したら置き換える
@@ -313,7 +315,7 @@ class KitazDao_AnalyzeSQLFile extends KitazDaoBase {
 					}
 				}
 			}
-		}
+		}		
 		eval("if(". $evalStr ."){\$ret = true;}else{\$ret = false;};");
 		return $ret;
 	}
