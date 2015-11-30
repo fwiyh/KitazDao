@@ -6,16 +6,16 @@ Oracle11gでS2Dao.php5を用いてLOB型を取りにいけなかったため自�
 もちろん、永続化などといった概念的な部分は一切考えずにS2Daoのようにかけるものを目指して作っただけです。
 
 [動作環境]
-PHP5.3+
+PHP5.5+
 各種PDO
-Oracle11g, mysql5.x, Postgresql 8.4.21, SQL Server 2008 R2, ODBC(MSAccess)
+Oracle11g/12c, mysql5.6, Postgresql 8.4.21, SQL Server 2014, ODBC(MSAccess)
 
 [動作テストを行ったDB]
-Oracle11.2(windows)
-mysql5.1(FreeBSD8.4-p12 AMD64)
-Postgresql 8.4.21(windows)
-SQL Server 2008 R2
-Access 2007(mdb形式)
+Oracle11.2(windows7 AMD64)
+mysql5.6.19(FreeBSD10.2-RELEASE-p5 AMD64)
+Postgresql 8.4.21(windows7 AMD64)
+SQL Server 2014(windows7 AMD64)
+Access 2007(mdb形式)(windows7 AMD64)
 
 [インストール]
 KitazDaoフォルダをプログラムが読み取り可能な場所に格納してください。
@@ -500,6 +500,16 @@ Daoに記載されているようにメソッドを実行し、パラメータ�
 PDOがベースになっているため、これらの処理を行う場合はtransaction内で実行する必要があります。
 トランザクションを開始メソッドは「begintrans」、コミットは「commit」、」ロールバックは「rollback」を用意しています。
 インスタンス作成後（PDOのインスタンスができたとき）に宣言してください。
+
+
+
+[デバッグ関連]
+１　ログ出力機能
+SQLがどのように生成されているかをログで出力できます。
+> define("KD_DEBUG_SQL_OUTPUT_PATH", $path);
+のように「KD_DEBUG_SQL_OUTPUT_PATH」定数に出力パスを設定するとこのファイルに書き込みします。
+基本的にPDOによるパラメータ付与になるため、「:」で始まる変数がパラメータになります。
+SQLファイルで正常に処理が行われているか判定するときにも使えます。
 
 
 * データベース固有の実装
