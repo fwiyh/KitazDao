@@ -64,12 +64,6 @@ class DNewsDao{
 		return $ret;
 	}
 	
-	public function getMaxId(){
-		$ret = array();
-		$ret["columns"] = "MAX(NID) AS MAXID";
-		return $ret;
-	}
-	
 	public function insertNews($dto){
 		$ret = array();
 		return $ret;

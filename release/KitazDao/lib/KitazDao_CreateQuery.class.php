@@ -165,11 +165,6 @@ class KitazDao_CreateQuery extends KitazDaoBase {
 					break;
 			}
 		}
-		// @since 0.6.0
-		// KD_DEBUG_SQL_OUTPUT_PATHで出力パスが指定されている場合はそこにSQLを吐き出す
-		if (defined("KD_DEBUG_SQL_OUTPUT_PATH")){
-			$this->dumpSqlStatement($sql, KD_DEBUG_SQL_OUTPUT_PATH);
-		}
 		// prepare
 		$stmt = $this->prepare($sql);
 		//bind処理
@@ -600,25 +595,5 @@ class KitazDao_CreateQuery extends KitazDaoBase {
 		}
 		return $stmt;
 	}
-	
-	/**
-	 * ログ出力
-	 * @param type $sql sql文字列
-	 * @param type $logPath 出力パス
-	 */
-	public function dumpSqlStatement($sql, $logPath){
-		try{
-			if (!file_exists($logPath)){
-				touch($logPath);
-			}
-			$fo = fopen($logPath, "a");
-			fwrite($fo, Date("Y-m-d H:i:s") ."\n");
-			fwrite($fo, $sql ."\n\n");
-			fclose($fo);
-		}catch (Exception $e){
-			if ($fo){
-				fclose($fo);
-			}
-		}
-	}
+
 }
