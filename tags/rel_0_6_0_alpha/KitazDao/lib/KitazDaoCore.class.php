@@ -1,7 +1,6 @@
 <?php
 require_once __DIR__ . DIRECTORY_SEPARATOR . "KitazDao_GetDataType.class.php";
 require_once __DIR__ . DIRECTORY_SEPARATOR . "KitazDao_GetObject.class.php";
-require_once __DIR__ . DIRECTORY_SEPARATOR . "KitazDao_OutputSelectQuery.class.php";
 require_once __DIR__ . DIRECTORY_SEPARATOR . "KitazDaoBase.class.php";
 
 /**
@@ -109,9 +108,10 @@ class KitazDaoCore extends KitazDaoBase {
 			// no output warning for INSERT/UPDATE from OCI-CLOB
 			$ret = @$stmt->execute();
 		} catch (PDOException $e){
-			throw new KitazDaoException(8, null, $e);
+			$errmsg = "PDOException*[getCode:". $e->getCode() ."]"."[errorInfo:". $e->errorInfo ."]"."[getMessage:". $e->getMessage() ."]*";
+			throw new KitazDaoException(8, $errmsg, $e);
 		} catch (Exception $e){
-			throw new KitazDaoException(8, null, $e);
+			throw new KitazDaoException(10, null, $e);
 		}
 		// falseの場合は実行時エラー
 		if (empty($ret)){
@@ -119,8 +119,16 @@ class KitazDaoCore extends KitazDaoBase {
 		}
 		// select文は全配列を返す
 		if ($queryType == parent::KD_STMT_SELECT){
-			// PDOのINT/BOOL/NULL指定を行う
-			$outputSelectQuery = new KitazDao_OutputSelectQuery();
+			// fetchを行い配列に返す
+			$extClassName = "KitazDao_OutputSelectQuery_" . strtolower($this->dbType);
+			$extFilePath = __DIR__ . DIRECTORY_SEPARATOR . $extClassName .".class.php";
+			if (file_exists($extFilePath)){
+				require_once $extFilePath;
+			}else {
+				require_once __DIR__ . DIRECTORY_SEPARATOR ."KitazDao_OutputSelectQuery.class.php";
+				$extClassName = "KitazDao_OutputSelectQuery";
+			}
+			$outputSelectQuery = new $extClassName();
 			$ret = $outputSelectQuery->getArray($stmt, $this->loadEntity);
 		}
 		$stmt = null;

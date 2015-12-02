@@ -21,6 +21,7 @@ class KitazDaoException extends Exception {
 	private $msg7 = "not be defined method in Dao.";
 	private $msg8 = "occur PDO Exception.";
 	private $msg9 = "occur Exception in Preparing Query.";
+	private $msg10 = "occur Exception when SQL Executed.";
 	
 	public function __construct($msgId, $message = null, Exception $e = null){
 		

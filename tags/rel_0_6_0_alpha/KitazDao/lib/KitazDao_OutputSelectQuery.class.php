@@ -21,50 +21,70 @@ class KitazDao_OutputSelectQuery extends KitazDaoBase {
 	 * @return multitype:
 	 */
 	public function getArray($stmt, $entity){
-		$ret = array();
-		$pdoTypeArray = array();
+		
+		// 実行SELECT文から取得されるcolumnを取得
+		$columns = array();
+		for ($i = 0; $i < $stmt->columnCount(); $i++){
+			$cm = $stmt->getColumnMeta($i);
+			$columns[] = $cm["name"];
+			$colname = $cm["name"];
+			// Entityから
+			$stmt->bindColumn($colname, $$colname);
+		}
 		
 		// Eintityから数値型の配列を取得する
-		$refClass = new ReflectionClass($entity);
-		$constants = $refClass->getConstants();
-		foreach($constants as $key => $val){
-			// 定数の最後が「_TYPE」のものを取得する
-			if ((strpos($key,"_TYPE") >= strlen($key) -5) && substr($key, 0, -5) != ""){
-				// 定数の値からPDOのデータ型を取得する
-				$column = strtolower(substr($key, 0, -5));
-				$pdoTypeArray[$column] = $val;
+//		$refClass = new ReflectionClass($entity);
+//		$constants = $refClass->getConstants();
+//		// 結果セット配列
+//		$paramNameArr = array();
+//		foreach($constants as $key => $val){
+//			// 定数の最後が「_TYPE」のものを取得する
+//			if ((strpos($key,"_TYPE") >= strlen($key) -5) && substr($key, 0, -5) != ""){
+//				// 定数の値からPDOのデータ型を取得する
+//				$column = strtolower(substr($key, 0, -5));
+//				// 項目名, バインドさせる変数, データ型S
+//				$stmt->bindColumn($column, $$column, $val);
+//				$paramNameArr[] = $column;
+//			}
+//		}
+		$retArr = array();
+		while ($stmt->fetch(PDO::FETCH_BOUND)){
+			$tmpArr = array();
+			// パラメータすべての配列を作成して１レコードを作成する
+			foreach ($columns as $pn){
+				// 全小文字
+				$tmpArr[$pn] = $$pn;
+				// 全大文字
+				$tmpArr[strtoupper($pn)] = $$pn;
 			}
+			$retArr[] = $tmpArr;
 		}
 		
 		// 全件取得する
-		while ($row = $stmt->fetch(PDO::FETCH_ASSOC)){
-			// 各行でPDOのINTになっているものだけfloat変換して置き換える
-			foreach($row as $key => $v){
-				// 整数型扱いのものはピリオドの有無で整数・浮動小数に変更
-				switch ($pdoTypeArray[strtolower($key)]){
-					case parent::KD_PARAM_INT:
-						$row[strtolower($key)] = floatval($v);
-						$row[strtoupper($key)] = floatval($v);
-						break;
-					// ブール型はキャストで変更
-					case KitazDao::KD_PARAM_BOOL :
-						$row[strtolower($key)] = (bool)$v;
-						$row[strtoupper($key)] = (bool)$v;
-						break;
-					// null型はnullを入れておく
-					case KitazDao::KD_PARAM_NULL :
-						$row[strtolower($key)] = null;
-						$row[strtoupper($key)] = null;
-						break;
-					default:
-						$row[strtolower($key)] = $v;
-						$row[strtoupper($key)] = $v;
-						break;
-				}
+//		$retArr = $this->fetch($stmt, $paramNameArr);
+		return $retArr;
+	}
+	
+	/**
+	 * bindColumnによるfetchと値取得
+	 * @param type $stmt
+	 * @param type $paramNameArr
+	 * @return type
+	 */
+	public function fetch($stmt, $paramNameArr){
+		$retArr = array();
+		while ($row = $stmt->fetch(PDO::FETCH_BOUND)){
+			$tmpArr = array();
+			// パラメータすべての配列を作成して１レコードを作成する
+			foreach ($paramNameArr as $pn){
+				// 全小文字
+				$tmpArr[$pn] = $$pn;
+				// 全大文字
+				$tmpArr[strtoupper($pn)] = $$pn;
 			}
-			$ret[] = $row;
+			$retArr[] = $tmpArr;
 		}
-		return $ret;
+		return $retArr;
 	}
 	
 }

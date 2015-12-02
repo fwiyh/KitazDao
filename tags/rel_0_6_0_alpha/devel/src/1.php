@@ -26,4 +26,5 @@ $ndto->setAuthor("AAAA0000");
 
 // delete
 
-$ndao->getMaxId();
+$ret = $ndao->selectEveningNews(1);
+var_dump($ret);
