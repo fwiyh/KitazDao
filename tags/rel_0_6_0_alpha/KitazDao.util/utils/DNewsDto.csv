@@ -1,0 +1,8 @@
+updt,str,0
+nid,int,1
+title,str,0
+pubdt,str,0
+pid,int,0
+ismorning,int,0
+pages,str,0
+author,str,0
