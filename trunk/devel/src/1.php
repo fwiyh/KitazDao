@@ -1,11 +1,12 @@
 <?php
 // KitazDao using variants, class files
 require_once "./env.php";
-define("KD_DEBUG_SQL_OUTPUT_PATH", "F:\\My Documents\\Projects\\src\\KitazDao\\devel\\src\\1.php.txt");
+//define("KD_DEBUG_SQL_OUTPUT_PATH", "F:\\My Documents\\Projects\\src\\KitazDao\\devel\\src\\1.php.txt");
 
 define("KD_DAO_PATH", "../dao");
 define("KD_ENTITY_PATH", "../dto");
 
+$kd = new KitazDao(SQLITE3_CONFIG);
 $ndao = $kd->getDao("DNewsDao");
 $ndto = new DNewsDto();
 
@@ -26,4 +27,5 @@ $ndto->setAuthor("AAAA0000");
 
 // delete
 
-$ndao->getMaxId();
+$r = $ndao->getMaxId();
+var_dump($r);

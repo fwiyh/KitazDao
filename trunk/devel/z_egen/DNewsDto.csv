@@ -6,3 +6,4 @@ pid,int,0
 ismorning,int,0
 pages,str,0
 author,str,0
+maxid,int,0

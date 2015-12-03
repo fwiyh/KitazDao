@@ -11,6 +11,7 @@ class DNewsDto {
 	private $ismorning;
 	private $pages;
 	private $author;
+	private $maxid;
 
 	const UPDT_TYPE = KitazDao::KD_PARAM_STR;
 	const NID_TYPE = KitazDao::KD_PARAM_INT;
@@ -20,6 +21,7 @@ class DNewsDto {
 	const ISMORNING_TYPE = KitazDao::KD_PARAM_INT;
 	const PAGES_TYPE = KitazDao::KD_PARAM_STR;
 	const AUTHOR_TYPE = KitazDao::KD_PARAM_STR;
+	const MAXID_TYPE = KitazDao::KD_PARAM_INT;
 
 	const PRIMARY_KEY = "NID";
 
@@ -94,5 +96,14 @@ class DNewsDto {
 	}
 	public function setAuthor($author) {
 		$this->author = $author;
+	}
+	/**
+	 * getter/setter of maxid
+	**/
+	public function getMaxid() {
+		return $this->maxid;
+	}
+	public function setMaxid($maxid) {
+		$this->maxid = $maxid;
 	}
 }
