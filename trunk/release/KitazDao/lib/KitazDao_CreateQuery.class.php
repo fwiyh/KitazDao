@@ -201,8 +201,8 @@ class KitazDao_CreateQuery extends KitazDaoBase {
 		if (isset($daoParam["type"])){
 			$this->typeParam = $daoParam["type"];
 		}
-        if (isset($daoParam["null"])){
-            $this->nullParam = $daoParam["null"];
+        if (isset($daoParam["nullparam"])){
+            $this->nullParam = $daoParam["nullparam"];
         }
         if (isset($daoParam["noparam"])){
             $this->noparam = $daoParam["noparam"];
@@ -259,6 +259,7 @@ class KitazDao_CreateQuery extends KitazDaoBase {
 				continue;
 			}
 			// @since 0.5.0 nullParam
+			// @since 0.6.0 column is null
 			if (stripos($this->nullParam, $column) !== false){
 				$value = null;
 			}
@@ -529,7 +530,12 @@ class KitazDao_CreateQuery extends KitazDaoBase {
 	 * @param String $columnName カラム名
 	 */
 	public function setConditionEqualStatement($value, $column, $prefix = ""){
-		$this->sqlConditionArray[] = $column ."=".":". $prefix . $column;
+		// @since 0.6.0 nullの判定を追加
+		if (is_null($value)){
+			$this->sqlConditionArray[] = $column ." IS NULL";
+		}else {
+			$this->sqlConditionArray[] = $column ."=".":". $prefix . $column;
+		}
 		$this->sqlPHArray[] = ":". $prefix . $column;
 		$this->bindValues[] = $value;
 		$this->pdoDataType[] =  KitazDao_GetDataType::getPDODataType(get_class($this->entity), $column, $value, $this->typeParam);

@@ -10,22 +10,27 @@ $kd = new KitazDao(SQLITE3_CONFIG);
 $ndao = $kd->getDao("DNewsDao");
 $ndto = new DNewsDto();
 
-// insert
-$nid = 3;
-$ndto->setUpdt(Date("Y-m-d H:i:s"));
-$ndto->setNid($nid);
-$ndto->setTitle("3件目のニュース");
-$ndto->setPubdt(Date("Y-m-d 00:00:00"));
-$ndto->setPid(3);
-$ndto->setIsmorning(0);
-$ndto->setPages("12");
-$ndto->setAuthor("AAAA0000");
-//$ndao->insertNews($ndto);
-
-// update
-
-
-// delete
-
-$r = $ndao->getMaxId();
+$r = $ndao->getNews(2);
+echo "getNews<br>";
 var_dump($r);
+echo "<br>";
+
+$r = $ndao->selectEveningNews(1);
+echo "selectEveningNews<br>";
+var_dump($r);
+echo "<br>";
+
+$r = $ndao->selectPaperNews(1);
+echo "selectPaperNews<br>";
+var_dump($r);
+echo "<br>";
+
+$r = $ndao->selectPaperNewsOrder(0, 1);
+echo "selectPaperNewsOrder<br>";
+var_dump($r);
+echo "<br>";
+
+$r = $ndao->selectNullPubDate(null);
+echo "selectNullPubDate<br>";
+var_dump($r);
+echo "<br>";

@@ -68,3 +68,13 @@ $dto->setIsmorning(0);
 $dto->setPages("2");
 $dto->setAuthor("WWWW8888");
 $dao->insertNews($dto);
+
+$dto->setUpdt(Date("Y-m-d H:i:s"));
+$dto->setNid(3);
+$dto->setTitle("(´・ω・`)そんなー");
+$dto->setPubdt(null);
+$dto->setPid(1);
+$dto->setIsmorning(0);
+$dto->setPages("2");
+$dto->setAuthor("WWWW8888");
+$dao->insertNews($dto);
