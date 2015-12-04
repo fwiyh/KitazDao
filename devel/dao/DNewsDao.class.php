@@ -4,7 +4,7 @@ class DNewsDao{
 	const BEAN = "DNewsDto";
 	
 	/**
-	 * -where -orderby -columns sql type -noparam
+	 * -where -orderby -columns sql type -noparam -nullparam
 	 */
 	
 	/**
@@ -61,6 +61,17 @@ class DNewsDao{
 		}
 		$ret["orderby"] = $orderbyString;
 		$ret["noparam"] = "isasc, isfirstmorning";
+		return $ret;
+	}
+	
+	/**
+	 * $pubdate = null を検索
+	 * @param type $pubdate
+	 * @return string
+	 */
+	public function selectNullPubDate($pubdt){
+		$ret = array();
+		$ret["nullparam"] = "pubdt";
 		return $ret;
 	}
 	
