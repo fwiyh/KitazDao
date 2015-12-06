@@ -303,8 +303,6 @@ class KitazDao_AnalyzeSQLFile extends KitazDaoBase {
 	private function evaluateFormula($evalStr){
 		$ret = false;
 		// 全パターンの演算子以外を取り出す
-//		$pattern = "/[^\"\'\s]{0,1}[\S]{1,}[^\"\'\s]{0,1}[(IF\s|=|\!|\+|\-|\*|\/|NULL\s|\||\&|AND\s|OR\s|XOR\s|\~|\^|\<|\>)]{1,}[^\"\'\s]{0,}[\S]{1,}[^\"\'\s]{0,}/i";
-//		$pattern = "/[^\"\'\s]{1,}[^(IF\s|=|\!|\+|\-|\*|\/|NULL\s|\||\&|AND\s|OR\s|XOR\s|\~|\^)]{1,}[^\"\'\s]{1,}/i";
 		$pattern = "/[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*/i";
 		if (preg_match_all($pattern, $evalStr, $matches)){
 			foreach ($matches[0] as $v){
