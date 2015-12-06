@@ -6,14 +6,15 @@ Oracle11gでS2Dao.php5を用いてLOB型を取りにいけなかったため自�
 もちろん、永続化などといった概念的な部分は一切考えずにS2Daoのようにかけるものを目指して作っただけです。
 
 [動作環境]
-PHP5.5+
+PHP5.5.x(5.3以降）
 各種PDO
 Oracle11g/12c, mysql5.6, Postgresql 8.4.21, SQL Server 2014, ODBC(MSAccess)
 
 [動作テストを行ったDB]
 Oracle11.2(windows7 AMD64)
 mysql5.6.19(FreeBSD10.2-RELEASE-p5 AMD64)
-Postgresql 8.4.21(windows7 AMD64)
+mysql5.7.9(windows7 AMD64)
+Postgresql 9.4.1(windows7 AMD64)
 SQL Server 2014(windows7 AMD64)
 Access 2007(mdb形式)(windows7 AMD64)
 
