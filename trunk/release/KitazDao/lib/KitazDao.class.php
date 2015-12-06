@@ -95,7 +95,7 @@ class KitazDao extends KitazDaoBase {
 		// 戻り値
 		$ret = array();
 		
-		// 0.6.0 ディレクトリセパレートがある場合はそのままのパスを渡す
+		// @since 0.6.0 ディレクトリセパレートがある場合はそのままのパスを渡す
 		$dsnstr = $cfgName;
 		if (strpos($dsnstr, DIRECTORY_SEPARATOR) === false){
 			// KitazDaoディレクトリ直下を参照する
