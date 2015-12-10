@@ -137,7 +137,7 @@ class KitazDao_AnalyzeSQLFile extends KitazDaoBase {
 	private function setPlaceHolderForVariant($paramName, $value, &$sql, &$sqlPHArray, &$bindValues, &$pdoDataType, $entity = null, $propName = null){
 		// エンティティの場合はコロンを「_E_」に置き換えてプレースホルダーを作成する
 		// @since 0.6.0 クォートがない場合はboolean,null,数値とみなす
-		$pattern1 = "/(\/\*)". $paramName ."(\*\/)([\"](\S|\s){0,}[\"]|[\'](\S|\s){0,}[\']|([0-9a-zA-Z\.\-]){1,})/i";
+		$pattern1 = "/(\/\*)". $paramName ."(\*\/)([\"]([^\"]){0,}[\"]|[\']([^\']){0,}[\']|([0-9a-zA-Z\.\-]){1,})/i";
 		// プレースホルダーになる部分を配列に分解して結合し直す
 		$sqlArr = preg_split($pattern1, $sql);
 		$str = "";
