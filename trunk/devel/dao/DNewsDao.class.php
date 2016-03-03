@@ -17,6 +17,12 @@ class DNewsDao{
 		return $ret;
 	}
 	
+	public function selectSQLStmt($ismorning){
+		$ret = array();
+		$ret["sql"] = "SELECT * FROM D_NEWS /*BEGIN*/WHERE /*IF ismorning != ''*/ISMORNING = /*ismorning*/1/*END*//*END*/ ORDER BY NID DESC";
+		return $ret;
+	}
+	
 	/**
 	 * where,columnsテスト
 	 * @param unknown $ismorning

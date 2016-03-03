@@ -1,17 +1,24 @@
 <?php
 // KitazDao using variants, class files
 require_once "./env.php";
-//define("KD_DEBUG_SQL_OUTPUT_PATH", "F:\\My Documents\\Projects\\src\\KitazDao\\devel\\src\\1.php.txt");
+define("KD_DEBUG_SQL_OUTPUT_PATH", "F:\\My Documents\\Projects\\src\\KitazDao\\devel\\src\\1.php.txt");
 
 define("KD_DAO_PATH", "../dao");
 define("KD_ENTITY_PATH", "../dto");
 
-//$kd = new KitazDao(SQLITE3_CONFIG);
+$kd = new KitazDao(SQLITE3_CONFIG);
 //$kd = new KitazDao(MYSQL_CONFIG);
-$kd = new KitazDao(PGSQL_CONFIG);
+//$kd = new KitazDao(PGSQL_CONFIG);
 
 $ndao = $kd->getDao("DNewsDao");
 $ndto = new DNewsDto();
+
+$r = $ndao->selectSQLStmt("");
+var_dump($r);
+$r = $ndao->selectSQLStmt(1);
+var_dump($r);
+
+exit();
 
 $r = $ndao->getNews(2);
 echo "getNews<br>";
