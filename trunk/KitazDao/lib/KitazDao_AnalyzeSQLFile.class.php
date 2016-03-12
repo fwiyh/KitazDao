@@ -182,7 +182,7 @@ class KitazDao_AnalyzeSQLFile extends KitazDaoBase {
 		$pattern1 = "/(\/\*)". $paramName ."(\*\/)(\(){1}([0-9a-zA-Z,\.\-\"\'\_\s]{1,})(\)){1}/i";
 		// プレースホルダーになる部分を配列に分解して結合し直す
 		$sqlArr = preg_split($pattern1, $sql);
-		$str = "";
+        $str = "";
 		$dataType = null;
 		$targetPropName = "";
 		$max = count($sqlArr) - 1;
