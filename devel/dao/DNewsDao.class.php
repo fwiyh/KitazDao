@@ -17,6 +17,11 @@ class DNewsDao{
 		return $ret;
 	}
 	
+        /**
+         * SQLパラメータテスト
+         * @param type $ismorning
+         * @return string
+         */
 	public function selectSQLStmt($ismorning){
 		$ret = array();
 		$ret["sql"] = "SELECT * FROM D_NEWS /*BEGIN*/WHERE /*IF ismorning != ''*/ISMORNING = /*ismorning*/1/*END*//*END*/ ORDER BY NID DESC";
@@ -80,11 +85,21 @@ class DNewsDao{
 		$ret["nullparam"] = "pubdt";
 		return $ret;
 	}
+    
+    /**
+     * ニュースIDの配列からでーたを取得する
+     * @param array $nids
+     * @return array
+     */
+    public function selectSomeFromArray($nids){
+        $ret = array();
+        return $ret;
+    }
 	
 	public function getMaxId(){
-		$ret = array();
-		$ret["columns"] = "MAX(NID) AS MAXID";
-		return $ret;
+        $ret = array();
+        $ret["columns"] = "MAX(NID) AS MAXID";
+        return $ret;
 	}
 	
 	public function insertNews($dto){
