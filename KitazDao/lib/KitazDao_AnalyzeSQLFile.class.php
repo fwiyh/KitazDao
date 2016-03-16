@@ -207,7 +207,7 @@ class KitazDao_AnalyzeSQLFile extends KitazDaoBase {
 				}
 				$str .= "(". implode(",", $inStr) .") ". $sqlArr[$i+1];
 			}
-			// paramArrayに追加（SQLファイルのIFコメントで配列は無効）
+			// paramArrayに追加 @NOTE fixed at 0.6.2（SQLファイルのIFコメントで配列は無効）
 			$this->setParamsArray($paramName, $value, $dataType);
 		}else {
 			// max0:$sqlArrが１要素の場合＝分割要素がないのでそのまま渡す
