@@ -1,7 +1,6 @@
 <?php
 require_once __DIR__ . DIRECTORY_SEPARATOR . "KitazDao_GetDataType.class.php";
 require_once __DIR__ . DIRECTORY_SEPARATOR . "KitazDao_GetObject.class.php";
-require_once __DIR__ . DIRECTORY_SEPARATOR . "KitazDao_OutputSelectQuery.class.php";
 require_once __DIR__ . DIRECTORY_SEPARATOR . "KitazDaoBase.class.php";
 
 /**
@@ -120,9 +119,18 @@ class KitazDaoCore extends KitazDaoBase {
 		// select文は全配列を返す
 		if ($queryType == parent::KD_STMT_SELECT){
 			// PDOのINT/BOOL/NULL指定を行う
-			$outputSelectQuery = new KitazDao_OutputSelectQuery();
-			$ret = $outputSelectQuery->getArray($stmt, $this->loadEntity);
-		}
+    		// DB拡張があればそれを取り込む
+            $extClassName = "KitazDao_OutputSelectQuery_" . strtolower($this->dbType);
+            $extFilePath = __DIR__ . DIRECTORY_SEPARATOR . $extClassName .".class.php";
+            if (file_exists($extFilePath)){
+                require_once $extFilePath;
+            }else {
+                require_once __DIR__ . DIRECTORY_SEPARATOR ."KitazDao_OutputSelectQuery.class.php";
+                $extClassName = "KitazDao_OutputSelectQuery";
+            }
+            $outputSelectQuery = new $extClassName();
+            $ret = $outputSelectQuery->getArray($stmt, $this->loadEntity);
+    	}
 		$stmt = null;
 		return $ret;
 	}
