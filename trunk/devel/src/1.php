@@ -14,9 +14,6 @@ $ndao = $kd->getDao("DNewsDao");
 $ndto = new DNewsDto();
 
 
-echo count(array(null));
-exit();
-
 $nids = array(1,4,2);
 $r = $ndao->selectSomeFromArray($nids);
 var_dump($r);
