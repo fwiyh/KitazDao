@@ -130,6 +130,7 @@ class KitazDaoCore extends KitazDaoBase {
             }
             $outputSelectQuery = new $extClassName();
             $ret = $outputSelectQuery->getArray($stmt, $this->loadEntity);
+            unset($outputSelectQuery);
     	}
 		$stmt = null;
 		return $ret;
