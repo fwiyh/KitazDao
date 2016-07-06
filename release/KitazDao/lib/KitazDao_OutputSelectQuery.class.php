@@ -23,8 +23,15 @@ class KitazDao_OutputSelectQuery extends KitazDaoBase {
 	public function getArray($stmt, $entity){
 		$ret = array();
 		$pdoTypeArray = array();
-		
-		// Eintityから数値型の配列を取得する
+        
+        $pdoTypeArray = $this->getDataType($entity);
+        $ret = $this->getValues($stmt, $pdoTypeArray);
+        
+        return $ret;
+    }
+    
+    public function getDataType($entity){
+		// Entityから数値型の配列を取得する
 		$refClass = new ReflectionClass($entity);
 		$constants = $refClass->getConstants();
 		foreach($constants as $key => $val){
@@ -35,7 +42,10 @@ class KitazDao_OutputSelectQuery extends KitazDaoBase {
 				$pdoTypeArray[$column] = $val;
 			}
 		}
-		
+        return $pdoTypeArray;
+    }
+	
+    public function getValues($stmt, $pdoTypeArray){
 		// 全件取得する
 		while ($row = $stmt->fetch(PDO::FETCH_ASSOC)){
 			// 各行でPDOのINTになっているものだけfloat変換して置き換える
@@ -56,9 +66,13 @@ class KitazDao_OutputSelectQuery extends KitazDaoBase {
 						$row[strtolower($key)] = null;
 						$row[strtoupper($key)] = null;
 						break;
+                    case KitazDao::KD_PARAM_STR :
+                        $row[strtolower($key)] = (string)$v;
+						$row[strtoupper($key)] = (string)$v;
+                        break;
 					default:
-						$row[strtolower($key)] = $v;
-						$row[strtoupper($key)] = $v;
+                        // 数値・文字列・ブール・nullでない場合をdb毎に切り替える
+						$this->otherValue($row, $key, $v);
 						break;
 				}
 			}
@@ -67,4 +81,9 @@ class KitazDao_OutputSelectQuery extends KitazDaoBase {
 		return $ret;
 	}
 	
+    // 特に何もない場合
+    public function otherValue(&$row, $key, $v){
+        $row[strtolower($key)] = $v;
+        $row[strtoupper($key)] = $v;
+    }
 }
