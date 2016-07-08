@@ -16,16 +16,17 @@ class KitazDao_OutputSelectQuery_oci extends KitazDao_OutputSelectQuery {
 	 */
     // lob型の扱い
     public function otherValue(&$row, $key, $v){
-        // $vはストリーミングのID
-        $b = "";
         // バッファオフ
         ob_end_clean();
         // バッファの取り込み
         ob_start();
-        echo $v;
-        $b = ob_get_contents();
-        ob_end_clean();
-        $row[strtolower($key)] = $b;
+		// リソースIDからバッファを出力
+        fpassthru($v);
+		// バッファをすべて代入
+		$b = ob_get_contents();
+		// バッファのクリア
+ 		ob_end_clean();
+		$row[strtolower($key)] = $b;
         $row[strtoupper($key)] = $b;
     }
 }

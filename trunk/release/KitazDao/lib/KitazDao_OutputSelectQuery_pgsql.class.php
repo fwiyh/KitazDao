@@ -14,18 +14,19 @@ class KitazDao_OutputSelectQuery_pgsql extends KitazDao_OutputSelectQuery {
 	 * ストリームオブジェクトのみをそのまま引き渡すために
 	 * まず全件取得してから、INTを数値に置き換える処理に変更
 	 */
-    // lob型の扱い
+    // lob型の扱い $vはリソースID
     public function otherValue(&$row, $key, $v){
-        // $vはストリーミングのID
-        $b = "";
         // バッファオフ
         ob_end_clean();
         // バッファの取り込み
         ob_start();
-        echo $v;
-        $b = ob_get_contents();
-        ob_end_clean();
-        $row[strtolower($key)] = $b;
+		// リソースIDからバッファを出力
+        fpassthru($v);
+		// バッファをすべて代入
+		$b = ob_get_contents();
+		// バッファのクリア
+ 		ob_end_clean();
+		$row[strtolower($key)] = $b;
         $row[strtoupper($key)] = $b;
     }
 }
