@@ -11,12 +11,12 @@ class KitazDao extends KitazDaoBase {
 	
 	/**
 	 * PDOオブジェクト
-	 * @var PDOクラス
+	 * @var PDO
 	 */
 	private $pdo;
 	/**
 	 * DB種別
-	 * @var DB種別文字列
+	 * @var string
 	 *  mysql/sqlite2/sqlite/pgsql/oci/dblib/sqlsrv
 	 */
 	private $dbType;
@@ -29,11 +29,12 @@ class KitazDao extends KitazDaoBase {
 	 */
 	public function __construct($cfgName = "KitazDao.config"){
 		// 設定ファイルからDSN情報を取得
-		$dsnArr = array();
 		$dsnArr = $this->getConfig($cfgName);
 		
-		// DB接続
-		if (!$this->connect($dsnArr)){
+		$eo = null;
+		if (!$this->connect($dsnArr, $eo)){
+			// @TODO 例外握りつぶしていた
+			echo $eo->getMessage();
 			throw new KitazDaoException(3);
 		}
 		
@@ -152,10 +153,11 @@ class KitazDao extends KitazDaoBase {
 	 * @param array $dsnArr 設定ファイルから取得したDSN情報
 	 * @return DB接続成否
 	 */
-	private function connect($dsmArr){
+	private function connect($dsnArr, &$eo){
 		try {
-			$this->pdo = new PDO($dsmArr["dsn"], $dsmArr["username"], $dsmArr["passwd"], $dsmArr["options"]);
+			$this->pdo = new PDO($dsnArr["dsn"], $dsnArr["username"], $dsnArr["passwd"], $dsnArr["options"]);
 		} catch (PDOException $e){
+			$eo = $e;
 			return false;
 		}
 		return true;

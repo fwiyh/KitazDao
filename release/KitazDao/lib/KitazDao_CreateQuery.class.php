@@ -575,7 +575,7 @@ class KitazDao_CreateQuery extends KitazDaoBase {
 		$this->whereParam = substr($this->whereParam, 0, $pos) . ":$paramName ". substr($this->whereParam, $pos+1);
 		$this->sqlPHArray[] = ":$paramName";
 		$this->bindValues[] = $value;
-		$this->pdoDataType[] =  KitazDao_GetDataType::getPDODataType(get_class($this->entity), $paramName, $value, $this->typeParam);
+		$this->pdoDataType[] = KitazDao_GetDataType::getPDODataType(get_class($this->entity), $paramName, $value, $this->typeParam);
 	}
 
 	/**

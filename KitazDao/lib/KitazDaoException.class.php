@@ -22,7 +22,7 @@ class KitazDaoException extends Exception {
 	private $msg8 = "occur PDO Exception.";
 	private $msg9 = "occur Exception in Preparing Query.";
 	
-	public function __construct($msgId, $message = null, Exception $e = null){
+	public function __construct($msgId, $message = null, $e = null){
 		
 		$msg = $this->getCustomMessage($msgId);
 		if ($message != null){
