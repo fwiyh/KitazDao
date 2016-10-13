@@ -12,7 +12,7 @@ class DSpeachDto {
 	const UPDT_TYPE = KitazDao::KD_PARAM_STR;
 	const SID_TYPE = KitazDao::KD_PARAM_INT;
 	const TITLE_TYPE = KitazDao::KD_PARAM_STR;
-	const MEDIA_TYPE = KitazDao::KD_PARAM_LOB;
+	const MEDIA_TYPE = KitazDao::KD_PARAM_OCI_BLOB;
 	const MAXID_TYPE = KitazDao::KD_PARAM_INT;
 
 	const PRIMARY_KEY = "SID";
