@@ -14,7 +14,7 @@ class KitazDao_OutputSelectQuery_oci extends KitazDao_OutputSelectQuery {
 	 * ストリームオブジェクトのみをそのまま引き渡すために
 	 * まず全件取得してから、INTを数値に置き換える処理に変更
 	 */
-    // lob型の扱い
+    // lob型の扱い $vはリソースID
     public function otherValue(&$row, $key, $v){
         // バッファオフ
         ob_end_clean();

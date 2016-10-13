@@ -1,7 +1,7 @@
 <?php
-class DSpeachDao{
+class DSpeechDao{
 	
-	const BEAN = "DSpeachDto";
+	const BEAN = "DSpeechDto";
 	
 	/**
 	 * -where -orderby -columns sql type -noparam -nullparam
