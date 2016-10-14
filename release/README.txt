@@ -11,7 +11,7 @@ PHP5.5.x(5.3以降）
 Oracle11g/12c, mysql5.6, Postgresql 8.4.21, SQL Server 2014, ODBC(MSAccess)
 
 [動作テストを行ったDB]
-Oracle11.2(windows7 AMD64)
+Oracle12.0.1(windows7 AMD64)
 mysql5.6.19(FreeBSD10.2-RELEASE-p5 AMD64)
 mysql5.7.9(windows7 AMD64)
 Postgresql 9.4.1(windows7 AMD64)
