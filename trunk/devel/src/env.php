@@ -29,7 +29,7 @@ if ($_SESSION["SelectDatabase"] == "accdb"){
 if ($_SESSION["SelectDatabase"] == "olacle"){
 	define("KD_ENTITY_PATH", "../dto_ora");
 }else if ($_SESSION["SelectDatabase"] == "sqlsvr"){
-	define("KD_ENTITY_PATH", "dto_sqlsrv");
+	define("KD_ENTITY_PATH", "../dto_sqlsrv");
 }else {
 	define("KD_ENTITY_PATH", "../dto");
 }
