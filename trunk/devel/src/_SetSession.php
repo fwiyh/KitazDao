@@ -1,24 +1,14 @@
 <?php
+require_once "./env.php";
 
 // セッション配列を取得
-$sessionNames = $_POST["name"];
-$sessionValues = $_POST["value"];
+$name = $_POST["name"];
+$value = $_POST["value"];
+$_SESSION[$name] = $value;
 
-if (count($sessionNames) != count($sessionValues)){
-    $returnInfo = array();
-    $returnInfo["result"] = -1;
-    $returnInfo["messaage"] = "パラメータ数不一致につき処理は行いません。";
-    $returnInfo["data"] = null;
-}
+$ret["result"] = 0;
+$ret["message"] = "";
+$ret["data"] = "";
 
-
-
-
-
-
-
-
-
-function commonReturnJson(){
-    
-}
+header("Content-type: application/json");
+echo json_encode($ret);
