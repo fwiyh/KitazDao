@@ -10,7 +10,6 @@ require_once "./env.php";
 //$kd = new KitazDao(ACCDB_CONFIG);
 //$kd = new KitazDao(SQLITE3_CONFIG);
 
-
-
+//$_SESSION["SelectDatabase"]
 
 
