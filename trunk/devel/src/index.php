@@ -12,4 +12,6 @@ require_once "./env.php";
 
 //$_SESSION["SelectDatabase"]
 
+$cSmarty->assign("selectDatabase", $_SESSION["SelectDatabase"]);
 
+$cSmarty->display(SMARTY_TEMPLATE_DIR . URI_FILE_NAME . ".tpl");
