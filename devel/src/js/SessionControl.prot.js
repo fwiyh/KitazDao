@@ -2,7 +2,7 @@
  * require jquery
  */
 
-SessionProc = function(){
+SessionControl = function(){
 	
 };
 

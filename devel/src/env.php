@@ -1,7 +1,8 @@
 <?php
 require_once "../../KitazDao/kitazDao.class.php";
+require_once "../class/Smarty/Smarty.class.php";
 
-define("DB_CONFIG_DIR", "..". DIRECTORY_SEPARATOR ."config". DIRECTORY_SEPARATOR);
+define("DB_CONFIG_DIR", "..". DIRECTORY_SEPARATOR . "class" . DIRECTORY_SEPARATOR ."config". DIRECTORY_SEPARATOR);
 
 define("MYSQL_CONFIG", DB_CONFIG_DIR ."KitazDao.mysql.config");
 define("SQLSRV_CONFIG", DB_CONFIG_DIR ."KitazDao.sqlsrv.config");
@@ -34,3 +35,10 @@ if ($_SESSION["SelectDatabase"] == "olacle"){
 	define("KD_ENTITY_PATH", "../dto");
 }
 
+// smarty定数
+define("SMARTY_TEMPLATE_DIR", "../" . DIRECTORY_SEPARATOR . "class" .DIRECTORY_SEPARATOR . "templates" . DIRECTORY_SEPARATOR);
+
+// smarty変数
+$cSmarty = new Smarty();
+$cSmarty->template_dir = "..". DIRECTORY_SEPARATOR . "class" . DIRECTORY_SEPARATOR ."templates". DIRECTORY_SEPARATOR;
+$cSmarty->compiledir = "..". DIRECTORY_SEPARATOR . "class" . DIRECTORY_SEPARATOR ."templates_c". DIRECTORY_SEPARATOR;
