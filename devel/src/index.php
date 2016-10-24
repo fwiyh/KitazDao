@@ -10,8 +10,16 @@ require_once "./env.php";
 //$kd = new KitazDao(ACCDB_CONFIG);
 //$kd = new KitazDao(SQLITE3_CONFIG);
 
-//$_SESSION["SelectDatabase"]
+$cSmarty->assign("selectDatabase", $selectDatabase);
 
-$cSmarty->assign("selectDatabase", $_SESSION["SelectDatabase"]);
+$drivers = array();
+$drivers[""] = "";
+$drivers["mdb"] = "mdb";
+$drivers["mysql"] = "mysql";
+$drivers["oci"] = "ora12c";
+$drivers["pgsql"] = "pgsql";
+$drivers["sqlite3"] = "sqlite3";
+$drivers["sqlsrv"] = "sqlsrv";
+$cSmarty->assign("selectableDatabase", $drivers);
 
 $cSmarty->display(SMARTY_TEMPLATE_DIR . URI_FILE_NAME . ".tpl");

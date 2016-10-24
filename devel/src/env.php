@@ -20,16 +20,21 @@ define("URI_FILE_NAME", pathinfo($_SERVER['PHP_SELF'], PATHINFO_FILENAME));
 // 拡張子
 define("URI_FILE_EXTENSION", pathinfo($_SERVER['PHP_SELF'], PATHINFO_EXTENSION));
 
+// 選択DBを取得
+$selectDatabase = "";
+if (isset($_SESSION["SelectDatabase"])){
+	$selectDatabase = $_SESSION["SelectDatabase"];
+}
 // dao定数 
-if ($_SESSION["SelectDatabase"] == "accdb"){
+if ($selectDatabase == "accdb"){
 	define("KD_DAO_PATH", "../dao_mdb");
 }else {
 	define("KD_DAO_PATH", "../dao");
 }
 // dto定数
-if ($_SESSION["SelectDatabase"] == "olacle"){
+if ($selectDatabase == "olacle"){
 	define("KD_ENTITY_PATH", "../dto_ora");
-}else if ($_SESSION["SelectDatabase"] == "sqlsvr"){
+}else if ($selectDatabase == "sqlsvr"){
 	define("KD_ENTITY_PATH", "../dto_sqlsrv");
 }else {
 	define("KD_ENTITY_PATH", "../dto");
@@ -41,4 +46,4 @@ define("SMARTY_TEMPLATE_DIR", "../" . DIRECTORY_SEPARATOR . "class" .DIRECTORY_S
 // smarty変数
 $cSmarty = new Smarty();
 $cSmarty->template_dir = "..". DIRECTORY_SEPARATOR . "class" . DIRECTORY_SEPARATOR ."templates". DIRECTORY_SEPARATOR;
-$cSmarty->compiledir = "..". DIRECTORY_SEPARATOR . "class" . DIRECTORY_SEPARATOR ."templates_c". DIRECTORY_SEPARATOR;
+$cSmarty->compile_dir = "..". DIRECTORY_SEPARATOR . "class" . DIRECTORY_SEPARATOR ."templates_c". DIRECTORY_SEPARATOR;
