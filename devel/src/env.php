@@ -8,7 +8,7 @@ define("MYSQL_CONFIG", DB_CONFIG_DIR ."KitazDao.mysql.config");
 define("SQLSRV_CONFIG", DB_CONFIG_DIR ."KitazDao.sqlsrv.config");
 define("ORA12C_CONFIG", DB_CONFIG_DIR ."KitazDao.ora12c.config");
 define("PGSQL_CONFIG", DB_CONFIG_DIR ."KitazDao.pgsql.config");
-define("ACCDB_CONFIG", DB_CONFIG_DIR ."KitazDao.accdb.config");
+define("MDB_CONFIG", DB_CONFIG_DIR ."KitazDao.mdb.config");
 define("SQLITE3_CONFIG", DB_CONFIG_DIR ."KitazDao.sqlite3.config");
 
 // アクセスファイルのファイルシステムパス
@@ -20,19 +20,22 @@ define("URI_FILE_NAME", pathinfo($_SERVER['PHP_SELF'], PATHINFO_FILENAME));
 // 拡張子
 define("URI_FILE_EXTENSION", pathinfo($_SERVER['PHP_SELF'], PATHINFO_EXTENSION));
 
+// session
+session_start();
+
 // 選択DBを取得
 $selectDatabase = "";
 if (isset($_SESSION["SelectDatabase"])){
 	$selectDatabase = $_SESSION["SelectDatabase"];
 }
 // dao定数 
-if ($selectDatabase == "accdb"){
+if ($selectDatabase == "mdb"){
 	define("KD_DAO_PATH", "../dao_mdb");
 }else {
 	define("KD_DAO_PATH", "../dao");
 }
 // dto定数
-if ($selectDatabase == "olacle"){
+if ($selectDatabase == "oci"){
 	define("KD_ENTITY_PATH", "../dto_ora");
 }else if ($selectDatabase == "sqlsvr"){
 	define("KD_ENTITY_PATH", "../dto_sqlsrv");
